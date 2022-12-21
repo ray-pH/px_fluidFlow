@@ -196,7 +196,7 @@ function hex2rgb(h){
 }
 
 class FluidRenderer{
-    constructor(fluidsim, canvas, cScale){
+    constructor(fluidsim, canvas){
         this.fluidsim = fluidsim;
         this.canvas   = canvas;
 
@@ -204,8 +204,9 @@ class FluidRenderer{
         this.width    = canvas.width;
         this.height   = canvas.height;
 
+        var scale = canvas.height/fluidsim.ny;
         this.ctx.clearRect(0, 0, this.width, this.height);
-        this.ctx.scale(4,4);
+        this.ctx.scale(scale,scale);
         this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation
         
         // temp canvas to store original values

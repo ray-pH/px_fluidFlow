@@ -72,6 +72,7 @@ scene_generators[1] = function scene_opposingSources(f, t = 0){
     for (var j = jmin; j < jmax; j++){
         f.Vx[1    + nx*j] = source_v;
         f.Vx[nx-1 + nx*j] = -source_v;
+        // f.Vx[nx-2 + nx*j] = -source_v;
     }
 
     var jmin = Math.floor(0.5 * f.ny - 0.5*dye_height);
