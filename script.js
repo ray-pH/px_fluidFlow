@@ -1,5 +1,5 @@
 import {FluidSimulator, FluidRenderer} from "./fluidSim.js";
-import {scene_generators} from "./scenes.js";
+import {scene_generators, sceneReset} from "./scenes.js";
 
 var canvas = document.getElementById("canvas");
 var over_relaxation = 1.0;  // parameter for SOR solver
@@ -23,5 +23,20 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-scene_generators[1](fluidsim);
+var scene = 1;
+
+function setup(){
+    sceneReset(fluidsim);
+    scene_generators[scene](fluidsim);
+}
+
+var button_reset  = document.getElementById("button_reset");
+var button_ppause = document.getElementById("button_toggle_play");
+button_reset.onclick = setup;
+button_toggle_play.onclick = () => {
+    paused = !paused;
+    button_toggle_play.innerHTML = paused ? "play" : "pause";
+}
+
+setup();
 loop();

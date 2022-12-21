@@ -26,6 +26,19 @@ function addCircularObstacle(f, x, y, radius) {
     } }
 }
 
+function sceneReset(f){
+    f.Vx.fill(0.0);
+    f.Vy.fill(0.0);
+
+    f.P.fill(0.0)
+    f.S.fill(1.0)
+    f.Dye.fill(1.0)
+
+    f.Vxnew.fill(0.0);
+    f.Vynew.fill(0.0);
+    f.Dyenew.fill(0.0);
+}
+
 // some scenes can be dynamic
 scene_generators[0] = function scene_WindTunnel(f, t = 0){
     var nx = f.nx;
@@ -84,4 +97,4 @@ scene_generators[1] = function scene_opposingSources(f, t = 0){
 
 }
 
-export {scene_generators};
+export {scene_generators, sceneReset};
