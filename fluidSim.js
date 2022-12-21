@@ -135,7 +135,7 @@ class FluidSimulator {
             var yn = j*h + 0.5*h;
 
             // x component
-            if (this.S[i-1 + nx*j] != 0.0 && j < this.ny - 1) {
+            if (this.S[i-1 + nx*j] != 0.0) {
                 var vx = this.Vx[i + nx*j];
                 // var vy = this.Vy[i + nx*j];
                 // var vx = this.avgVx(i, j);
@@ -145,7 +145,7 @@ class FluidSimulator {
                 this.Vxnew[i + nx*j] = this.interpolateFromField(x,y, this.Vx);
             }
             // y component
-            if (this.S[i + nx*(j-1)] != 0.0 && i < this.nx - 1) {
+            if (this.S[i + nx*(j-1)] != 0.0) {
                 var vx = this.avgVx(i, j);
                 // var vy = this.avgVy(i, j);
                 // var vx = this.Vx[i + nx*j];
