@@ -29,8 +29,11 @@ class FluidSimulator {
         this.S.fill(1.0)
         this.Dye.fill(1.0)
 
-        this.Vxnew = new Float32Array(n);
-        this.Vynew = new Float32Array(n);
+        // helper fields
+        this.div    = new Float32Array(n);
+        this.ss     = new Float32Array(n);
+        this.Vxnew  = new Float32Array(n);
+        this.Vynew  = new Float32Array(n);
         this.Dyenew = new Float32Array(n);
 
         // parameter for SOR solver
@@ -56,10 +59,13 @@ class FluidSimulator {
 
                 var div = this.Vx[i+1 + nx*j] - this.Vx[i + nx*j] + 
                           this.Vy[i + nx*(j+1)] - this.Vy[i + nx*j];
+                this.div[i + nx*j] = div;
+                this.ss [i + nx*j] = s  ;
 
                 var p = -div/s;
                 p *= this.over_relaxation;
                 this.P[i + nx*j] += cp * p;
+                // console.log(cp*p);
 
                 this.Vx[i   + nx*j    ] -= sx0 * p;
                 this.Vx[i+1 + nx*j    ] += sx1 * p;
@@ -67,6 +73,10 @@ class FluidSimulator {
                 this.Vy[i   + nx*(j+1)] += sy1 * p;
             } }
         }
+    }
+
+    calculatePressure(){
+
     }
 
     extrapolateBoundary() {
@@ -195,6 +205,23 @@ function hex2rgb(h){
     return [r,g,b,255];
 }
 
+function sciColor(val, minVal, maxVal) {
+    var range = maxVal - minVal;
+    val = clamp(val, minVal, maxVal - 0.0001);
+    val = (range == 0.0) ? 0.5 : (val - minVal) / range;
+    var m = 0.25;
+    var num = Math.floor(val / m);
+    var s = (val - num * m) / m;
+    var r, g, b;
+    switch (num) {
+        case 0 : r = 0.0; g = s;       b = 1.0;   break;
+        case 1 : r = 0.0; g = 1.0;     b = 1.0-s; break;
+        case 2 : r = s;   g = 1.0;     b = 0.0;   break;
+        case 3 : r = 1.0; g = 1.0 - s; b = 0.0;   break;
+    }
+    return[255*r,255*g,255*b, 255]
+}
+
 class FluidRenderer{
     constructor(fluidsim, canvas){
         this.fluidsim = fluidsim;
@@ -216,6 +243,40 @@ class FluidRenderer{
         this.temp_ctx      = this.temp_canvas.getContext('2d');
         this.temp_img_data = this.temp_ctx.getImageData(0,0, this.temp_canvas.width, this.temp_canvas.height);
         this.temp_pixels   = this.temp_img_data.data;
+    }
+
+    drawStreamline(){
+        var h = this.fluidsim.h;
+        var segLen = h * 0.2;
+        var numSegs = 15;
+
+        this.ctx.strokeStyle = "#000000";
+        this.ctx.lineWidth = 0.1;
+
+        for (var i = 1; i < this.fluidsim.nx - 1; i += 5) {
+            for (var j = 1; j < this.fluidsim.ny - 1; j += 5) {
+
+                var x = (i + 0.5) * h;
+                var y = (j + 0.5) * h;
+
+                this.ctx.beginPath();
+                // c.moveTo(cX(x), cY(y));
+                this.ctx.moveTo(x/h, y/h);
+
+                for (var n = 0; n < numSegs; n++) {
+                    var u = this.fluidsim.interpolateFromField(x, y, this.fluidsim.Vx);
+                    var v = this.fluidsim.interpolateFromField(x, y, this.fluidsim.Vy);
+                    var l = Math.sqrt(u*u + v*v);
+                    // x += u/l * segLen;
+                    // y += v/l * segLen;
+                    x += u * 0.01;
+                    y += v * 0.01;
+                    if (x > this.fluidsim.nx * this.fluidsim.h) break;
+                    this.ctx.lineTo(x/h, y/h);
+                }
+                this.ctx.stroke();
+            }
+        }
     }
 
     draw() {
@@ -242,6 +303,31 @@ class FluidRenderer{
         }}
 
 
+        // put data into temp_canvas
+        this.temp_ctx.putImageData(this.temp_img_data, 0, 0);
+        // draw into original canvas
+        this.ctx.drawImage(this.temp_canvas, 0, 0);
+    }
+
+    drawPressure(){
+        var fl = this.fluidsim;
+        var p_min, p_max;
+        p_min = p_max = fl.P[0];
+        for (var i = 0; i < fl.nx * fl.ny; i++) {
+            p_min = Math.min(p_min, fl.P[i]);
+            p_max = Math.max(p_max, fl.P[i]);
+        }
+        console.log(fl.P);
+        console.log(p_min, p_max);
+        for (var i = 0; i < fl.nx; i++) { for (var j = 0; j < fl.ny; j++) {
+            var p = fl.P[i + (fl.nx)*j];
+            var color = sciColor(p, p_min, p_max);
+            var ptr = 4 * (j * this.temp_canvas.width + i);
+            this.temp_pixels[ptr+0] = color[0];
+            this.temp_pixels[ptr+1] = color[1];
+            this.temp_pixels[ptr+2] = color[2];
+            this.temp_pixels[ptr+3] = color[3];
+        }}
         // put data into temp_canvas
         this.temp_ctx.putImageData(this.temp_img_data, 0, 0);
         // draw into original canvas
