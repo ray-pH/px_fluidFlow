@@ -34,9 +34,9 @@ function sceneReset(f){
     f.S.fill(1.0)
     f.Dye.fill(1.0)
 
-    f.Vxnew.fill(0.0);
-    f.Vynew.fill(0.0);
-    f.Dyenew.fill(0.0);
+    f.Vxprev.fill(0.0);
+    f.Vyprev.fill(0.0);
+    f.Dyeprev.fill(0.0);
 }
 
 // some scenes can be dynamic

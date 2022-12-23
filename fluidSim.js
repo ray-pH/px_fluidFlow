@@ -32,9 +32,9 @@ class FluidSimulator {
         // helper fields
         this.div    = new Float32Array(n);
         this.ss     = new Float32Array(n);
-        this.Vxnew  = new Float32Array(n);
-        this.Vynew  = new Float32Array(n);
-        this.Dyenew = new Float32Array(n);
+        this.Vxprev = new Float32Array(n);
+        this.Vyprev = new Float32Array(n);
+        this.Dyeprev= new Float32Array(n);
 
         // parameter for SOR solver
         this.over_relaxation = over_relaxation;
@@ -113,21 +113,21 @@ class FluidSimulator {
         return val;
     }
 
-    avgVx(i, j) {
+    avgVx(i, j, Vx) {
         var nx = this.nx;
-        return (this.Vx[i   + nx*(j-1)] + this.Vx[i   + nx*j] +
-                this.Vx[i+1 + nx*(j-1)] + this.Vx[i+1 + nx*j]) * 0.25;
+        return (Vx[i   + nx*(j-1)] + Vx[i   + nx*j] +
+                Vx[i+1 + nx*(j-1)] + Vx[i+1 + nx*j]) * 0.25;
     }
 
-    avgVy(i, j){
+    avgVy(i, j, Vy){
         var nx = this.nx;
-        return (this.Vy[i-1 + nx*j]     + this.Vy[i + nx*j] +
-                this.Vy[i-1 + nx*(j+1)] + this.Vy[i + nx*(j+1)]) * 0.25;
+        return (Vy[i-1 + nx*j]     + Vy[i + nx*j] +
+                Vy[i-1 + nx*(j+1)] + Vy[i + nx*(j+1)]) * 0.25;
     }
 
     advectVel() {
-        this.Vxnew.set(this.Vx);
-        this.Vynew.set(this.Vy);
+        this.Vxprev.set(this.Vx);
+        this.Vyprev.set(this.Vy);
 
         var dt = this.dt;
         var nx = this.nx;
@@ -146,30 +146,30 @@ class FluidSimulator {
                 var vx = this.Vx[i + nx*j];
                 // var vy = this.Vy[i + nx*j];
                 // var vx = this.avgVx(i, j);
-                var vy = this.avgVy(i, j);
+                var vy = this.avgVy(i, j, this.Vyprev);
                 var x  = xn - vx*dt;
                 var y  = yn - vy*dt;
-                this.Vxnew[i + nx*j] = this.interpolateFromField(x,y, this.Vx);
+                this.Vx[i + nx*j] = this.interpolateFromField(x,y, this.Vxprev);
             }
             // y component
             if (this.S[i + nx*(j-1)] != 0.0) {
-                var vx = this.avgVx(i, j);
+                var vx = this.avgVx(i, j, this.Vxprev);
                 // var vy = this.avgVy(i, j);
                 // var vx = this.Vx[i + nx*j];
                 var vy = this.Vy[i + nx*j];
                 var x  = xn - vx*dt;
                 var y  = yn - vy*dt;
-                this.Vynew[i + nx*j] = this.interpolateFromField(x,y, this.Vy);
+                this.Vy[i + nx*j] = this.interpolateFromField(x,y, this.Vyprev);
             }
         } }
 
-        this.Vx.set(this.Vxnew);
-        this.Vy.set(this.Vynew);
+        // this.Vx.set(this.Vxnew);
+        // this.Vy.set(this.Vynew);
     }
 
     advectDye() {
         var dt = this.dt;
-        this.Dyenew.set(this.Dye);
+        this.Dyeprev.set(this.Dye);
         var nx = this.nx; var h = this.h;
         for (var i = 1; i < this.nx-1; i++) { for (var j = 1; j < this.ny-1; j++) {
             if (this.S[i + nx*j] == 0.0) continue;
@@ -179,9 +179,8 @@ class FluidSimulator {
             var vy = this.Vy[i + nx*j];
             var x  = i*h + 0.5*h - vx*dt;
             var y  = j*h + 0.5*h - vy*dt;
-            this.Dyenew[i + nx*j] = this.interpolateFromField(x,y, this.Dye);
+            this.Dye[i + nx*j] = this.interpolateFromField(x,y, this.Dyeprev);
         }}
-        this.Dye.set(this.Dyenew);
     }
 
     simulate() {

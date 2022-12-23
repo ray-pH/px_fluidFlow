@@ -2,7 +2,7 @@ import {FluidSimulator, FluidRenderer} from "./fluidSim.js";
 import {scene_generators, sceneReset} from "./scenes.js";
 
 var canvas = document.getElementById("canvas");
-var over_relaxation = 1.0;  // parameter for SOR solver
+var over_relaxation = 1.9;  // parameter for SOR solver
 var n_iter = 40;            // number of iteration for SOR solver
 var res    = 100;           // number of pixel in a column
 var h      = 1.0 / res;     // grid size
@@ -18,8 +18,12 @@ var fluidrenderer = new FluidRenderer(fluidsim, canvas);
 
 var paused = false;
 function loop() {
-    if (!paused) fluidsim.simulate()
-    fluidrenderer.draw();
+    if (!paused){
+        fluidsim.simulate()
+        // fluidrenderer.drawPressure();
+        fluidrenderer.draw();
+        fluidrenderer.drawStreamline();
+    }
     requestAnimationFrame(loop);
 }
 
