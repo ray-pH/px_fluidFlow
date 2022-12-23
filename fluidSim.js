@@ -44,6 +44,7 @@ class FluidSimulator {
     solveDivergence() {
         var nx = this.nx;
         var cp = this.density * this.h / this.dt;
+        this.P.fill(0.0);
 
         for (var k = 0; k < this.n_iter; k++) {
             for (var i = 1; i < this.nx-1; i++) { for (var j = 1; j < this.ny-1; j++) {
@@ -59,13 +60,13 @@ class FluidSimulator {
 
                 var div = this.Vx[i+1 + nx*j] - this.Vx[i + nx*j] + 
                           this.Vy[i + nx*(j+1)] - this.Vy[i + nx*j];
+
                 this.div[i + nx*j] = div;
                 this.ss [i + nx*j] = s  ;
 
                 var p = -div/s;
                 p *= this.over_relaxation;
                 this.P[i + nx*j] += cp * p;
-                // console.log(cp*p);
 
                 this.Vx[i   + nx*j    ] -= sx0 * p;
                 this.Vx[i+1 + nx*j    ] += sx1 * p;
@@ -73,10 +74,6 @@ class FluidSimulator {
                 this.Vy[i   + nx*(j+1)] += sy1 * p;
             } }
         }
-    }
-
-    calculatePressure(){
-
     }
 
     extrapolateBoundary() {
@@ -188,9 +185,7 @@ class FluidSimulator {
     }
 
     simulate() {
-        this.P.fill(0.0);
         this.solveDivergence();
-
         this.extrapolateBoundary();
         this.advectVel();
         this.advectDye();
@@ -317,8 +312,6 @@ class FluidRenderer{
             p_min = Math.min(p_min, fl.P[i]);
             p_max = Math.max(p_max, fl.P[i]);
         }
-        console.log(fl.P);
-        console.log(p_min, p_max);
         for (var i = 0; i < fl.nx; i++) { for (var j = 0; j < fl.ny; j++) {
             var p = fl.P[i + (fl.nx)*j];
             var color = sciColor(p, p_min, p_max);
