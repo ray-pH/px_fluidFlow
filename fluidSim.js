@@ -10,7 +10,7 @@ function clamp(x, min,max){
 }
 
 class FluidSimulator {
-    constructor(density, nx, ny, h, dt, n_iter, over_relaxation) {
+    constructor(density, nx, ny, h, dt, n_iter, over_relaxation, rgb_dye = false) {
         this.density = density;
         this.nx = nx ; 
         this.ny = ny ;
@@ -25,9 +25,7 @@ class FluidSimulator {
 
         this.P   = new Float32Array(n); //pressure
         this.S   = new Float32Array(n); //object 0 : solid obstacle, 1 : none
-        this.Dye = new Float32Array(n); //dye    0 : filled        , 1 : none
-        this.S.fill(1.0)
-        this.Dye.fill(1.0)
+        this.S.fill(1.0);
 
         // helper fields
         this.div    = new Float32Array(n);
@@ -35,6 +33,15 @@ class FluidSimulator {
         this.Vxprev = new Float32Array(n);
         this.Vyprev = new Float32Array(n);
         this.Dyeprev= new Float32Array(n);
+
+        this.rgb_dye = rgb_dye;
+        this.RDye = new Float32Array(n);
+        this.GDye = new Float32Array(n);
+        this.BDye = new Float32Array(n);
+        this.RDyeprev = new Float32Array(n);
+        this.GDyeprev = new Float32Array(n);
+        this.BDyeprev = new Float32Array(n);
+        this.RDye.fill(1.0); this.GDye.fill(1.0); this.BDye.fill(1.0);
 
         // parameter for SOR solver
         this.over_relaxation = over_relaxation;
@@ -167,9 +174,9 @@ class FluidSimulator {
         // this.Vy.set(this.Vynew);
     }
 
-    advectDye() {
+    advectDye(Dye, Dyeprev) {
         var dt = this.dt;
-        this.Dyeprev.set(this.Dye);
+        Dyeprev.set(Dye);
         var nx = this.nx; var h = this.h;
         for (var i = 1; i < this.nx-1; i++) { for (var j = 1; j < this.ny-1; j++) {
             if (this.S[i + nx*j] == 0.0) continue;
@@ -179,7 +186,7 @@ class FluidSimulator {
             var vy = this.Vy[i + nx*j];
             var x  = i*h + 0.5*h - vx*dt;
             var y  = j*h + 0.5*h - vy*dt;
-            this.Dye[i + nx*j] = this.interpolateFromField(x,y, this.Dyeprev);
+            Dye[i + nx*j] = this.interpolateFromField(x,y, Dyeprev);
         }}
     }
 
@@ -187,7 +194,16 @@ class FluidSimulator {
         this.solveDivergence();
         this.extrapolateBoundary();
         this.advectVel();
-        this.advectDye();
+
+        this.advectDye(this.RDye, this.RDyeprev);
+
+        if (this.rgb_dye){
+            this.advectDye(this.GDye, this.GDyeprev);
+            this.advectDye(this.BDye, this.BDyeprev);
+        } else {
+            this.GDye.set(this.RDye);
+            this.BDye.set(this.RDye);
+        }
     }
 }
 
@@ -281,10 +297,9 @@ class FluidRenderer{
 
         var color = [255, 255, 255, 255];
         for (var i = 0; i < fl.nx; i++) { for (var j = 0; j < fl.ny; j++) {
-            var s = fl.Dye[i + nx*j];
-            color[0] = 255*s;
-            color[1] = 255*s;
-            color[2] = 255*s;
+            color[0] = 255 * fl.RDye[i + nx*j];
+            color[1] = 255 * fl.GDye[i + nx*j];
+            color[2] = 255 * fl.BDye[i + nx*j];
 
             // #9bb6e0
             if (fl.S[i + nx*j] == 0) color = hex2rgb(0x9BB6E0); //obstacle

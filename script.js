@@ -32,6 +32,7 @@ var scene = 1;
 function setup(){
     sceneReset(fluidsim);
     scene_generators[scene](fluidsim);
+    fluidrenderer.draw();
 }
 
 var button_reset  = document.getElementById("button_reset");

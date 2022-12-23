@@ -32,11 +32,16 @@ function sceneReset(f){
 
     f.P.fill(0.0)
     f.S.fill(1.0)
-    f.Dye.fill(1.0)
+    f.RDye.fill(1.0)
+    f.GDye.fill(1.0)
+    f.BDye.fill(1.0)
 
     f.Vxprev.fill(0.0);
     f.Vyprev.fill(0.0);
-    f.Dyeprev.fill(0.0);
+
+    f.RDyeprev.fill(0.0);
+    f.GDyeprev.fill(0.0);
+    f.BDyeprev.fill(0.0);
 }
 
 // some scenes can be dynamic
@@ -90,9 +95,19 @@ scene_generators[1] = function scene_opposingSources(f, t = 0){
 
     var jmin = Math.floor(0.5 * f.ny - 0.5*dye_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5*dye_height);
+
     for (var j = jmin; j < jmax; j++){
-        f.Dye[0    + nx*j] = 0.0;
-        f.Dye[nx-1 + nx*j] = 0.0;
+        f.RDye[0    + nx*j] = 0.0;
+        f.GDye[nx-1 + nx*j] = 0.0;
+    }
+
+    if (!f.rgb_dye){
+        for (var i = 0; i < f.nx * f.ny; i++) {
+            let rDye = 1 - f.RDye[i];
+            let gDye = 1 - f.GDye[i];
+            let bDye = 1 - f.BDye[i];
+            f.RDye[i] = 1 - Math.min(rDye + gDye + bDye, 1.0);
+        }
     }
 
 }
