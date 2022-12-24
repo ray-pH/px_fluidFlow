@@ -17,22 +17,27 @@ var fluidsim      = new FluidSimulator(density, nx, ny, h, dt, n_iter, over_rela
 var fluidrenderer = new FluidRenderer(fluidsim, canvas);
 
 var paused = false;
-function loop() {
-    if (!paused){
-        fluidsim.simulate()
-        // fluidrenderer.drawPressure();
-        fluidrenderer.draw();
-        fluidrenderer.drawStreamline();
-    }
-    requestAnimationFrame(loop);
-}
 
 var scene = 0;
+
+var draw_option = {
+    'dye'       : true,
+    'obstacle'  : true,
+    'streamline': true,
+}
 
 function setup(){
     sceneReset(fluidsim);
     scene_generators[scene](fluidsim);
-    fluidrenderer.draw();
+    fluidrenderer.draw(draw_option);
+}
+
+function loop() {
+    if (!paused){
+        fluidsim.simulate()
+        fluidrenderer.draw(draw_option);
+    }
+    requestAnimationFrame(loop);
 }
 
 var select_scene  = document.getElementById("select_scene");

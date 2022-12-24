@@ -289,35 +289,50 @@ class FluidRenderer{
         }
     }
 
-    draw() {
-        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    putColor(color, i, j){
+        var p = 4 * (j * this.temp_canvas.width + i);
+        this.temp_pixels[p+0] = color[0];
+        this.temp_pixels[p+1] = color[1];
+        this.temp_pixels[p+2] = color[2];
+        this.temp_pixels[p+3] = color[3];
+    }
 
+    // buffer : keep in buffer, not draw to canvas yet
+    drawDye(buffer = false){
         var fl = this.fluidsim;
         var nx = fl.nx;
 
-        var color = [255, 255, 255, 255];
+        let color = [255, 255, 255, 255];
         for (var i = 0; i < fl.nx; i++) { for (var j = 0; j < fl.ny; j++) {
             color[0] = 255 * fl.RDye[i + nx*j];
             color[1] = 255 * fl.GDye[i + nx*j];
             color[2] = 255 * fl.BDye[i + nx*j];
+            color[3] = 255;
 
-            // #9bb6e0
-            if (fl.S[i + nx*j] == 0) color = hex2rgb(0x9BB6E0); //obstacle
-
-            var p = 4 * (j * this.temp_canvas.width + i);
-            this.temp_pixels[p+0] = color[0];
-            this.temp_pixels[p+1] = color[1];
-            this.temp_pixels[p+2] = color[2];
-            this.temp_pixels[p+3] = color[3];
+            this.putColor(color, i, j);
         }}
 
-
-        // put data into temp_canvas
+        if (buffer) return;
         this.temp_ctx.putImageData(this.temp_img_data, 0, 0);
-        // draw into original canvas
         this.ctx.drawImage(this.temp_canvas, 0, 0);
     }
 
+    drawObstacle(buffer = false){
+        var fl = this.fluidsim;
+        var nx = fl.nx;
+
+        // #9bb6e0
+        let obs_color = hex2rgb(0x9BB6E0); //obstacle
+        for (var i = 0; i < fl.nx; i++) { for (var j = 0; j < fl.ny; j++) {
+            if (fl.S[i + nx*j] == 0) this.putColor(obs_color, i, j);
+        }}
+
+        if (buffer) return;
+        this.temp_ctx.putImageData(this.temp_img_data, 0, 0);
+        this.ctx.drawImage(this.temp_canvas, 0, 0);
+    }
+
+    // TODO : buffer draw
     drawPressure(){
         var fl = this.fluidsim;
         var p_min, p_max;
@@ -340,6 +355,27 @@ class FluidRenderer{
         // draw into original canvas
         this.ctx.drawImage(this.temp_canvas, 0, 0);
     }
+
+
+    // var draw_option {
+    //     'dye'       : true,
+    //     'obstacle'  : true,
+    //     'streamline': true,
+    // }
+    draw(draw_option) {
+        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (draw_option['dye'])      this.drawDye(true);
+        if (draw_option['obstacle']) this.drawObstacle(true);
+
+        // put data into temp_canvas
+        this.temp_ctx.putImageData(this.temp_img_data, 0, 0);
+        // draw into original canvas
+        this.ctx.drawImage(this.temp_canvas, 0, 0);
+
+        if (draw_option['streamline']) this.drawStreamline();
+    }
+
 }
 
 export {FluidSimulator, FluidRenderer};
