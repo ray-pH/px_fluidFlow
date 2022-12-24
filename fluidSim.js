@@ -363,7 +363,7 @@ class FluidRenderer{
     //     'streamline': true,
     // }
     draw(draw_option) {
-        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.temp_canvas.clearRect(0, 0, temp_canvas.width, temp_canvas.height);
 
         if (draw_option['dye'])      this.drawDye(true);
         if (draw_option['obstacle']) this.drawObstacle(true);
