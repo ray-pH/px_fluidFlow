@@ -9,13 +9,26 @@
     <select name="select_scene" id="select_scene">
         <option value="0">Wind Tunnel</option>
         <option value="1">Fluid Collision</option>
-    </select>
+    </select><br>
+
+    Show : 
+    <input type="checkbox" id="checkbox_streamline" name="checkbox_streamline" checked>
+    <label for="checkbox_streamline">Streamline</label>
+    <input type="checkbox" id="checkbox_dye" name="checkbox_dye" checked>
+    <label for="checkbox_dye">Dye</label>
+    <input type="checkbox" id="checkbox_obstacle" name="checkbox_obstacle" checked>
+    <label for="checkbox_obstacle">Obstacle</label>
     <br>
+
     <body>
         <canvas id="canvas" width="600" height="400"></canvas>
-    </body>
-    <br>
+    </body><br>
+
     <button id="button_toggle_play">pause</button>
     <button id="button_reset">reset</button>
+    <br>
+
+
+
     <script type="module" src="script.js"></script>
 </html>

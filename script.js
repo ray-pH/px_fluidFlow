@@ -40,9 +40,13 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
+
 var select_scene  = document.getElementById("select_scene");
 var button_reset  = document.getElementById("button_reset");
 var button_ppause = document.getElementById("button_toggle_play");
+var cbox_streamline = document.getElementById("checkbox_streamline");
+var cbox_dye        = document.getElementById("checkbox_dye");
+var cbox_obstacle   = document.getElementById("checkbox_obstacle");
 button_reset.onclick = setup;
 button_toggle_play.onclick = () => {
     paused = !paused;
@@ -52,6 +56,10 @@ select_scene.onchange = () => {
     scene = parseInt(select_scene.value);
     setup();
 }
+cbox_streamline.onchange = () => { draw_option['streamline'] = cbox_streamline.checked; }
+cbox_dye.onchange        = () => { draw_option['dye']        = cbox_dye.checked; }
+cbox_obstacle.onchange   = () => { draw_option['obstacle']   = cbox_obstacle.checked; }
+
 
 setup();
 loop();
