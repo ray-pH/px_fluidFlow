@@ -16,12 +16,12 @@ function addCircularObstacle(f, x, y, radius) {
         var dy = (j + 0.5) * f.h - y;
 
         if (dx * dx + dy * dy < r * r) {
-            f.S  [i   + nx*j    ] = 0.0;
-            f.Dye[i   + nx*j    ] = 1.0;
-            f.Vx [i   + nx*j    ] = vx;
-            f.Vx [i+1 + nx*j    ] = vx;
-            f.Vy [i   + nx*j    ] = vy;
-            f.Vy [i   + nx*(j+1)] = vy;
+            f.S   [i   + nx*j    ] = 0.0;
+            f.RDye[i   + nx*j    ] = 1.0;
+            f.Vx  [i   + nx*j    ] = vx;
+            f.Vx  [i+1 + nx*j    ] = vx;
+            f.Vy  [i   + nx*j    ] = vy;
+            f.Vy  [i   + nx*(j+1)] = vy;
         }
     } }
 }
@@ -61,7 +61,7 @@ scene_generators[0] = function scene_WindTunnel(f, t = 0){
 
     var jmin = Math.floor(0.5 * f.ny - 0.5*pipe_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5*pipe_height);
-    for (var j = jmin; j < jmax; j++) f.Dye[0 + nx*j] = 0.0;
+    for (var j = jmin; j < jmax; j++) f.RDye[0 + nx*j] = 0.0;
 
     addCircularObstacle(f, 0.4, 0.5, 0.15);
 }

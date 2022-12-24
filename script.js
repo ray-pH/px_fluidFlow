@@ -27,7 +27,7 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-var scene = 1;
+var scene = 0;
 
 function setup(){
     sceneReset(fluidsim);
@@ -35,12 +35,17 @@ function setup(){
     fluidrenderer.draw();
 }
 
+var select_scene  = document.getElementById("select_scene");
 var button_reset  = document.getElementById("button_reset");
 var button_ppause = document.getElementById("button_toggle_play");
 button_reset.onclick = setup;
 button_toggle_play.onclick = () => {
     paused = !paused;
     button_toggle_play.innerHTML = paused ? "play" : "pause";
+}
+select_scene.onchange = () => {
+    scene = parseInt(select_scene.value);
+    setup();
 }
 
 setup();
