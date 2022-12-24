@@ -326,6 +326,7 @@ class FluidRenderer{
         let obs_color = hex2rgb(0x9BB6E0); //obstacle #9bb6e0
         for (let i = 0; i < fl.n; i++){
 
+            let color = [255, 255, 255, 255];
             if (draw_option['dye']){
                 color[0] = 255 * fl.RDye[i];
                 color[1] = 255 * fl.GDye[i];
