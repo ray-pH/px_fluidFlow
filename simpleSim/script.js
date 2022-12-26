@@ -251,8 +251,11 @@ function addCircularObstacle(f, x, y, radius) {
     var r = radius;
     var nx = f.nx;
 
-    for (var i = 1; i < f.nx-2; i++) { for (var j = 1; j < f.ny-2; j++) {
-        f.S[i + nx*j] = 1.0;
+    let ifrom = clamp(Math.floor((x-r-1)/f.h), 0, f.nx-1);
+    let ito   = clamp(Math.ceil ((x+r+2)/f.h), 0, f.nx-1);
+    let jfrom = clamp(Math.floor((y-r-1)/f.h), 0, f.ny-1);
+    let jto   = clamp(Math.ceil ((y+r+2)/f.h), 0, f.ny-1);
+    for (var i = ifrom; i < ito; i++) { for (var j = jfrom; j < jto; j++) {
 
         var dx = (i + 0.5) * f.h - x;
         var dy = (j + 0.5) * f.h - y;
@@ -260,14 +263,14 @@ function addCircularObstacle(f, x, y, radius) {
         if (dx * dx + dy * dy < r * r) {
             f.S  [i   + nx*j    ] = 0.0;
             f.Dye[i   + nx*j    ] = 1.0;
-            f.Vx [i   + nx*j    ] = 0;
-            f.Vy [i   + nx*j    ] = 0;
+            f.Vx [i   + nx*j    ] = 0.0;
+            f.Vy [i   + nx*j    ] = 0.0;
         }
     } }
 }
 
 // some scenes can be dynamic
-function scene_WindTunnel(f, t = 0){
+function scene_WindTunnel(f, _t = 0){
     var nx = f.nx;
     var wind_vel    = 2.0;
     var pipe_height = 0.1 * f.ny;
