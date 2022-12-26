@@ -170,9 +170,6 @@ class FluidSimulator {
                 this.Vy[i + nx*j] = this.interpolateFromField(x,y, this.Vyprev);
             }
         } }
-
-        // this.Vx.set(this.Vxnew);
-        // this.Vy.set(this.Vynew);
     }
 
     advectDye(Dye, Dyeprev) {

@@ -48,9 +48,9 @@ var cbox_streamline = document.getElementById("checkbox_streamline");
 var cbox_dye        = document.getElementById("checkbox_dye");
 var cbox_obstacle   = document.getElementById("checkbox_obstacle");
 button_reset.onclick = setup;
-button_toggle_play.onclick = () => {
+button_ppause.onclick = () => {
     paused = !paused;
-    button_toggle_play.innerHTML = paused ? "play" : "pause";
+    button_ppause.innerHTML = paused ? "play" : "pause";
 }
 select_scene.onchange = () => {
     scene = parseInt(select_scene.value);
