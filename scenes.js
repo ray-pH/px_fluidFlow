@@ -1,16 +1,18 @@
 var scene_generators = []
 
+function clamp(x, min,max){
+    return Math.min(max, Math.max(min, x));
+}
 
 function addCircularObstacle(f, x, y, radius) {
-    var vx = 0.0;
-    var vy = 0.0;
-
     var r = radius;
     var nx = f.nx;
-    var cd = Math.sqrt(2) * f.h;
 
-    for (var i = 1; i < f.nx-2; i++) { for (var j = 1; j < f.ny-2; j++) {
-        f.S[i + nx*j] = 1.0;
+    let ifrom = clamp(Math.floor((x-r-1)/f.h), 0, f.nx-1);
+    let ito   = clamp(Math.ceil ((x+r+2)/f.h), 0, f.nx-1);
+    let jfrom = clamp(Math.floor((y-r-1)/f.h), 0, f.ny-1);
+    let jto   = clamp(Math.ceil ((y+r+2)/f.h), 0, f.ny-1);
+    for (var i = ifrom; i < ito; i++) { for (var j = jfrom; j < jto; j++) {
 
         var dx = (i + 0.5) * f.h - x;
         var dy = (j + 0.5) * f.h - y;
@@ -18,10 +20,8 @@ function addCircularObstacle(f, x, y, radius) {
         if (dx * dx + dy * dy < r * r) {
             f.S   [i   + nx*j    ] = 0.0;
             f.RDye[i   + nx*j    ] = 1.0;
-            f.Vx  [i   + nx*j    ] = vx;
-            f.Vx  [i+1 + nx*j    ] = vx;
-            f.Vy  [i   + nx*j    ] = vy;
-            f.Vy  [i   + nx*(j+1)] = vy;
+            f.Vx  [i   + nx*j    ] = 0.0;
+            f.Vy  [i   + nx*j    ] = 0.0;
         }
     } }
 }
