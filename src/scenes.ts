@@ -44,6 +44,13 @@ function sceneReset(f){
     f.BDyeprev.fill(0.0);
 }
 
+function hex2rgb(h){
+    var r = (0xFF) & (h >> 16);
+    var g = (0xFF) & (h >> 8);
+    var b = (0xFF) & (h >> 0);
+    return [r,g,b,255];
+}
+
 // some scenes can be dynamic
 scene_generators[0] = function scene_WindTunnel(f, t = 0){
     var nx = f.nx;
@@ -96,9 +103,19 @@ scene_generators[1] = function scene_opposingSources(f, t = 0){
     var jmin = Math.floor(0.5 * f.ny - 0.5*dye_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5*dye_height);
 
+
+    //#3477eb
+    //#e81570
+    let r0,g0,b0,a0, r1, g1, b1, a1;
+    [r0,g0,b0,a0] = hex2rgb(0x3477EB);
+    [r1,g1,b1,a1] = hex2rgb(0xE81570);
     for (var j = jmin; j < jmax; j++){
-        f.RDye[0    + nx*j] = 0.0;
-        f.GDye[nx-1 + nx*j] = 0.0;
+        f.RDye[0    + nx*j] = r0/255;
+        f.GDye[0    + nx*j] = g0/255;
+        f.BDye[0    + nx*j] = b0/255;
+        f.RDye[nx-1 + nx*j] = r1/255;
+        f.GDye[nx-1 + nx*j] = g1/255;
+        f.BDye[nx-1 + nx*j] = b1/255;
     }
 
     if (!f.rgb_dye){
