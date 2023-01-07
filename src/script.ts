@@ -44,9 +44,9 @@ function loop() {
 var select_scene    = document.getElementById("select_scene") as HTMLSelectElement;
 var button_reset    = document.getElementById("button_reset");
 var button_ppause   = document.getElementById("button_toggle_play");
-var cbox_streamline = document.getElementById("checkbox_streamline") as HTMLInputElement;
-var cbox_dye        = document.getElementById("checkbox_dye") as HTMLInputElement;
-var cbox_obstacle   = document.getElementById("checkbox_obstacle") as HTMLInputElement;
+var cbox_streamline = document.getElementById("cx_streamline") as HTMLInputElement;
+var cbox_dye        = document.getElementById("cx_dye") as HTMLInputElement;
+var cbox_obstacle   = document.getElementById("cx_obstacle") as HTMLInputElement;
 button_reset.onclick = setup;
 button_ppause.onclick = () => {
     paused = !paused;

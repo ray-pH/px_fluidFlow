@@ -2,33 +2,107 @@
 <html>
     <head>
     <meta charset="utf-8" />
-        <title>Index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111111">
+    <title>px fluidFlow</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./script/script.js"></script>
+
+    <meta property="og:image" content="https://raw.githubusercontent.com/ray-pH/img/rlogo.png"/>
+    <meta property="og:description" content="Grid Based Fluid Dynamics simulation"/>
+    <meta property="og:url"content="https://ray-ph.github.io/pixelPhysics/px_fluidFlow"/>
+    <meta property="og:title" content="fluidFlow">
     </head>
-    <label for="select_scene">Scene :</label>
-
-    <select name="select_scene" id="select_scene">
-        <option value="0">Wind Tunnel</option>
-        <option value="1">Fluid Collision</option>
-    </select><br>
-
-    Show : 
-    <input type="checkbox" id="checkbox_streamline" name="checkbox_streamline" checked>
-    <label for="checkbox_streamline">Streamline</label>
-    <input type="checkbox" id="checkbox_dye" name="checkbox_dye" checked>
-    <label for="checkbox_dye">Dye</label>
-    <input type="checkbox" id="checkbox_obstacle" name="checkbox_obstacle" checked>
-    <label for="checkbox_obstacle">Obstacle</label>
-    <br>
-
     <body>
-        <canvas id="canvas" width="600" height="400"></canvas>
-    </body><br>
-
-    <button id="button_toggle_play">pause</button>
-    <button id="button_reset">reset</button>
-    <br>
-
-
-
-    <script type="module" src="script/script.js"></script>
+        <div class="header">
+            <span class="title">Fluid</span>
+            <a href="https://github.com/ray-pH/px_fluidFlow">GitHub</a>
+            <a href="../pixelPysics">PixelPhysics</a>
+            <span class="right">·</span>
+        </div>
+        <div class="main">
+            <div class="left-main">
+                <div class="canvas-container">
+                    <canvas id="canvas" width="500" height="500"></canvas>
+                </div>
+            </div>
+            <div class="right-main">
+                <div class="eq">
+                    ρ&nbsp; [
+                    &nbsp;
+                    <div class="frac">
+                        <span>∂ u̅</span>
+                        <span class="bottom">∂t</span>
+                    </div>
+                    &nbsp; +
+                    &nbsp; ( u̅ ⋅ ∇ ) u̅
+                    &nbsp; ]
+                    &nbsp; =
+                    &nbsp; - ∇ p
+                </div>
+                <button id="button_toggle_play">pause</button>
+                <button id="button_reset">reset</button>
+                <div id="debug" style="display:none">test</div>
+                <br>
+                <br>
+                <label for="select_scene">Scene :</label>
+                <select name="select_scene" id="select_scene" class="select">
+                    <option value="0">Random With Rotation</option>
+                    <option value="1">Random Static</option>
+                    <option value="2">Two Groups</option>
+                </select>
+                <button class="morebutton" id="button_moreScene">∨</button>
+                <br>
+                <div class="hideable_container" id="container_sceneInput">
+                    <textarea id="textarea_scene"></textarea>
+                    <button id="button_applyScene">apply</button>
+                    <div id="span_errorScene"></div>
+                </div>
+                <br><hr>
+                Render Options
+                <button class="morebutton" id="button_moreRender">∨</button>
+                <br>
+                <div class="hideable_container" id="container_renderOption">
+                    <input type="checkbox" id="cx_streamline" checked>
+                    <label for="cx_streamline">show Streamline</label>
+                    <br>
+                    <input type="checkbox" id="cx_dye" checked>
+                    <label for="cx_dye">show Dye</label>
+                    <br>
+                    <input type="checkbox" id="cx_obstacle" checked>
+                    <label for="cx_obstacle">show Obstacle</label>
+                    <br>
+                    <!-- <div style="display:grid; grid-template-columns: repeat(4, 1fr);"> -->
+                    <input type="checkbox" id="cx_toggleLog">
+                    <label for="cx_toggleLog">use log scale</label>
+                    <br>
+                    <label for="select_cmap">Color map :</label>
+                    <select name="select_cmap" id="select_cmap" class="select">
+                    </select>
+                    <!-- </div> -->
+                </div>
+                <br>
+                <!-- <br> -->
+                Simulation Options
+                <button class="morebutton" id="button_moreSimul">∨</button>
+                <br>
+                <div class="hideable_container" id="container_simulOption">
+                    <div class="grid_container">
+                        <label for="tx_n_grid">N grid</label>
+                        <input type="text" id="tx_n_grid" name="tx_n_grid">
+                        <!-- <label for="tx_n_iter">N iter</label> -->
+                        <!-- <input type="text" id="tx_n_iter" name="tx_n_iter"><br> -->
+                        <label for="tx_n_particle">N particle</label>
+                        <input type="text" id="tx_n_particle" name="tx_n_particle">
+                        <label for="tx_dt">dt</label>
+                        <input type="text" id="tx_dt" name="tx_dt">
+                        <label for="tx_G">G constant</label>
+                        <input type="text" id="tx_G" name="tx_G">
+                    </div><br>
+                    <button id="button_applySimulOp">apply</button>
+                    <div id="span_errorSimulOp"></div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
