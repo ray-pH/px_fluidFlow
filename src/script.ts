@@ -4,11 +4,6 @@ import {scene_generators, sceneReset} from "./scenes.js";
 var canvas = document.getElementById("canvas") as HTMLCanvasElement;
 var over_relaxation = 1.9;  // parameter for SOR solver
 var n_iter = 40;            // number of iteration for SOR solver
-// var res    = 100;           // number of pixel in a column
-// var h      = 1.0 / res;     // grid size
-
-// var nx = res * canvas.width / canvas.height;
-// var ny = res;
 var nx = 100;
 var ny = 100;
 
@@ -58,6 +53,21 @@ select_scene.onchange = () => {
     scene = parseInt(select_scene.value);
     setup();
 }
+
+function setButtonShow(buttonId : string, containerId : string){
+    let button     = document.getElementById(buttonId);
+    let container  = document.getElementById(containerId);
+    button.onclick = ()=>{
+        let changeto   = (container.style.display == 'none') ? 'block' : 'none';
+        button.innerHTML = (changeto == 'none') ? '∨' : '∧';
+        container.style.display = changeto;
+    };
+}
+setButtonShow("button_moreScene" , "container_sceneInput");
+setButtonShow("button_moreRender", "container_renderOption");
+setButtonShow("button_moreSimul" , "container_simulOption");
+
+
 cbox_streamline.onchange = () => { ro['show_streamline'] = cbox_streamline.checked; }
 cbox_dye.onchange        = () => { ro['show_dye']        = cbox_dye.checked; }
 cbox_obstacle.onchange   = () => { ro['show_obstacle']   = cbox_obstacle.checked; }
