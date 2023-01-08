@@ -35,6 +35,11 @@ function sceneReset(f) {
     f.RDyeprev.fill(0.0);
     f.GDyeprev.fill(0.0);
     f.BDyeprev.fill(0.0);
+    f.constVx.fill(NaN);
+    f.constVy.fill(NaN);
+    f.constRDye.fill(NaN);
+    f.constGDye.fill(NaN);
+    f.constBDye.fill(NaN);
 }
 function hex2rgb(h) {
     var r = (0xFF) & (h >> 16);
@@ -56,20 +61,26 @@ scene_generators[0] = function scene_WindTunnel(f, t = 0) {
     for (var j = 0; j < f.ny; j++)
         f.S[0 + nx * j] = 0.0;
     for (var j = 0; j < f.ny; j++)
-        f.Vx[1 + nx * j] = wind_vel;
+        f.constVx[1 + nx * j] = wind_vel;
     var jmin = Math.floor(0.5 * f.ny - 0.5 * pipe_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5 * pipe_height);
     for (var j = jmin; j < jmax; j++)
-        f.RDye[0 + nx * j] = 0.0;
+        f.constRDye[0 + nx * j] = 0.0;
     for (var j = jmin; j < jmax; j++)
-        f.GDye[0 + nx * j] = 0.0;
+        f.constGDye[0 + nx * j] = 0.0;
     for (var j = jmin; j < jmax; j++)
-        f.BDye[0 + nx * j] = 0.0;
+        f.constBDye[0 + nx * j] = 0.0;
+    for (var j = jmin; j < jmax; j++)
+        f.constRDye[1 + nx * j] = 0.0;
+    for (var j = jmin; j < jmax; j++)
+        f.constGDye[1 + nx * j] = 0.0;
+    for (var j = jmin; j < jmax; j++)
+        f.constBDye[1 + nx * j] = 0.0;
     addCircularObstacle(f, 0.3, 0.5, 0.1);
 };
 scene_generators[1] = function scene_opposingSources(f, t = 0) {
     var nx = f.nx;
-    var source_v = 2.0;
+    var source_v = 4.0;
     var pipe_height = 0.05 * f.ny;
     var dye_height = 0.05 * f.ny;
     // set obstacles
@@ -84,13 +95,12 @@ scene_generators[1] = function scene_opposingSources(f, t = 0) {
     var jmin = Math.floor(0.5 * f.ny - 0.5 * pipe_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5 * pipe_height);
     for (var j = 0; j < f.ny; j++) {
-        f.Vx[1 + nx * j] = 0.0;
-        f.Vx[nx - 1 + nx * j] = 0.0;
+        f.constVx[2 + nx * j] = 0.0;
+        f.constVx[nx - 2 + nx * j] = 0.0;
     }
     for (var j = jmin; j < jmax; j++) {
-        f.Vx[1 + nx * j] = source_v;
-        f.Vx[nx - 1 + nx * j] = -source_v;
-        // f.Vx[nx-2 + nx*j] = -source_v;
+        f.constVx[2 + nx * j] = source_v;
+        f.constVx[nx - 2 + nx * j] = -source_v;
     }
     var jmin = Math.floor(0.5 * f.ny - 0.5 * dye_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5 * dye_height);
@@ -100,20 +110,18 @@ scene_generators[1] = function scene_opposingSources(f, t = 0) {
     [r0, g0, b0, a0] = hex2rgb(0x3477EB);
     [r1, g1, b1, a1] = hex2rgb(0xE81570);
     for (var j = jmin; j < jmax; j++) {
-        f.RDye[0 + nx * j] = r0 / 255;
-        f.GDye[0 + nx * j] = g0 / 255;
-        f.BDye[0 + nx * j] = b0 / 255;
-        f.RDye[nx - 1 + nx * j] = r1 / 255;
-        f.GDye[nx - 1 + nx * j] = g1 / 255;
-        f.BDye[nx - 1 + nx * j] = b1 / 255;
-    }
-    if (!f.rgb_dye) {
-        for (var i = 0; i < f.nx * f.ny; i++) {
-            let rDye = 1 - f.RDye[i];
-            let gDye = 1 - f.GDye[i];
-            let bDye = 1 - f.BDye[i];
-            f.RDye[i] = 1 - Math.min(rDye + gDye + bDye, 1.0);
-        }
+        f.constRDye[0 + nx * j] = r0 / 255;
+        f.constGDye[0 + nx * j] = g0 / 255;
+        f.constBDye[0 + nx * j] = b0 / 255;
+        f.constRDye[2 + nx * j] = r0 / 255;
+        f.constGDye[2 + nx * j] = g0 / 255;
+        f.constBDye[2 + nx * j] = b0 / 255;
+        f.constRDye[nx - 1 + nx * j] = r1 / 255;
+        f.constGDye[nx - 1 + nx * j] = g1 / 255;
+        f.constBDye[nx - 1 + nx * j] = b1 / 255;
+        f.constRDye[nx - 3 + nx * j] = r1 / 255;
+        f.constGDye[nx - 3 + nx * j] = g1 / 255;
+        f.constBDye[nx - 3 + nx * j] = b1 / 255;
     }
 };
 export { scene_generators, sceneReset };
