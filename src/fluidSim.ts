@@ -31,6 +31,12 @@ class FluidSimulator {
     BDyeprev : Float32Array;
     over_relaxation : number;
 
+    constVx : Float32Array;
+    constVy : Float32Array;
+    constRDye : Float32Array;
+    constGDye : Float32Array;
+    constBDye : Float32Array;
+
     constructor(density : number, nx : number, ny : number, 
                 dt : number, n_iter : number, over_relaxation : number, 
                 rgb_dye : boolean = false) {
@@ -66,6 +72,17 @@ class FluidSimulator {
         this.GDyeprev = new Float32Array(n);
         this.BDyeprev = new Float32Array(n);
         this.RDye.fill(1.0); this.GDye.fill(1.0); this.BDye.fill(1.0);
+
+        this.constVx   = new Float32Array(n);
+        this.constVy   = new Float32Array(n);
+        this.constRDye = new Float32Array(n);
+        this.constGDye = new Float32Array(n);
+        this.constBDye = new Float32Array(n);
+        this.constVx  .fill(NaN);
+        this.constVy  .fill(NaN);
+        this.constRDye.fill(NaN);
+        this.constGDye.fill(NaN);
+        this.constBDye.fill(NaN);
 
         // parameter for SOR solver
         this.over_relaxation = over_relaxation;
@@ -104,6 +121,16 @@ class FluidSimulator {
                 this.Vy[i   + nx*j    ] -= sy0 * p;
                 this.Vy[i   + nx*(j+1)] += sy1 * p;
             } }
+        }
+    }
+
+    applyConstantFields(){
+        for (let i = 0; i < this.n; i++){
+            if (!isNaN(this.constVx[i]))   this.Vx[i] = this.constVx[i];
+            if (!isNaN(this.constVy[i]))   this.Vy[i] = this.constVy[i];
+            if (!isNaN(this.constRDye[i])) this.RDye[i] = this.constRDye[i];
+            if (!isNaN(this.constGDye[i])) this.GDye[i] = this.constGDye[i];
+            if (!isNaN(this.constBDye[i])) this.BDye[i] = this.constBDye[i];
         }
     }
 
@@ -217,7 +244,6 @@ class FluidSimulator {
         this.advectVel();
 
         this.advectDye(this.RDye, this.RDyeprev);
-
         if (this.rgb_dye){
             this.advectDye(this.GDye, this.GDyeprev);
             this.advectDye(this.BDye, this.BDyeprev);
@@ -225,6 +251,7 @@ class FluidSimulator {
             this.GDye.set(this.RDye);
             this.BDye.set(this.RDye);
         }
+        this.applyConstantFields();
     }
 }
 
