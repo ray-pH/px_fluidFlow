@@ -6,7 +6,7 @@ type scenefun = (nx : number, ny : number, S : Float32Array, utils : Object, id 
                 cRD : Float32Array, cGD : Float32Array, cBD : Float32Array,
                 ) => void;
 
-function sceneReset(f){
+function sceneReset(f : FluidSimulator){
     f.Vx.fill(0.0);
     f.Vy.fill(0.0);
 
