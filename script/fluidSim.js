@@ -36,26 +36,26 @@ class FluidSimulator {
         this.over_relaxation = over_relaxation;
     }
     solveDivergence() {
-        var nx = this.nx;
-        var cp = this.density * this.h / this.dt;
+        let nx = this.nx;
+        let cp = this.density * this.h / this.dt;
         this.P.fill(0.0);
-        for (var k = 0; k < this.n_iter; k++) {
-            for (var i = 1; i < this.nx - 1; i++) {
-                for (var j = 1; j < this.ny - 1; j++) {
+        for (let k = 0; k < this.n_iter; k++) {
+            for (let i = 1; i < this.nx - 1; i++) {
+                for (let j = 1; j < this.ny - 1; j++) {
                     if (this.S[i + nx * j] == 0.0)
                         continue;
-                    var sx0 = this.S[i - 1 + nx * j];
-                    var sx1 = this.S[i + 1 + nx * j];
-                    var sy0 = this.S[i + nx * (j - 1)];
-                    var sy1 = this.S[i + nx * (j + 1)];
-                    var s = sx0 + sx1 + sy0 + sy1;
+                    let sx0 = this.S[i - 1 + nx * j];
+                    let sx1 = this.S[i + 1 + nx * j];
+                    let sy0 = this.S[i + nx * (j - 1)];
+                    let sy1 = this.S[i + nx * (j + 1)];
+                    let s = sx0 + sx1 + sy0 + sy1;
                     if (s == 0.0)
                         continue;
-                    var div = this.Vx[i + 1 + nx * j] - this.Vx[i + nx * j] +
+                    let div = this.Vx[i + 1 + nx * j] - this.Vx[i + nx * j] +
                         this.Vy[i + nx * (j + 1)] - this.Vy[i + nx * j];
                     this.div[i + nx * j] = div;
                     this.ss[i + nx * j] = s;
-                    var p = -div / s;
+                    let p = -div / s;
                     p *= this.over_relaxation;
                     this.P[i + nx * j] += cp * p;
                     this.Vx[i + nx * j] -= sx0 * p;
@@ -67,96 +67,96 @@ class FluidSimulator {
         }
     }
     extrapolateBoundary() {
-        var nx = this.nx;
-        for (var i = 0; i < this.nx; i++) {
+        let nx = this.nx;
+        for (let i = 0; i < this.nx; i++) {
             this.Vx[i + nx * 0] = this.Vx[i + nx * 1];
             this.Vx[i + nx * (this.ny - 1)] = this.Vx[i + nx * (this.ny - 2)];
         }
-        for (var j = 0; j < this.ny; j++) {
+        for (let j = 0; j < this.ny; j++) {
             this.Vy[0 + nx * j] = this.Vy[1 + nx * j];
             this.Vy[(this.nx - 1) + nx * j] = this.Vy[(this.nx - 2) + nx * j];
         }
     }
     interpolateFromField(x, y, field) {
-        var nx = this.nx;
-        var h = this.h;
-        var i = clamp(x / h, 1, this.nx - 1);
-        var j = clamp(y / h, 1, this.ny - 1);
-        var i0 = Math.floor(i - 0.5);
-        var i1 = i0 + 1;
-        var j0 = Math.floor(j - 0.5);
-        var j1 = j0 + 1;
-        var tx = ((i - 0.5) - i0);
-        var ty = ((j - 0.5) - j0);
-        var sx = 1.0 - tx;
-        var sy = 1.0 - ty;
-        var val = sx * sy * field[i0 + nx * j0] +
+        let nx = this.nx;
+        let h = this.h;
+        let i = clamp(x / h, 1, this.nx - 1);
+        let j = clamp(y / h, 1, this.ny - 1);
+        let i0 = Math.floor(i - 0.5);
+        let i1 = i0 + 1;
+        let j0 = Math.floor(j - 0.5);
+        let j1 = j0 + 1;
+        let tx = ((i - 0.5) - i0);
+        let ty = ((j - 0.5) - j0);
+        let sx = 1.0 - tx;
+        let sy = 1.0 - ty;
+        let val = sx * sy * field[i0 + nx * j0] +
             tx * sy * field[i1 + nx * j0] +
             tx * ty * field[i1 + nx * j1] +
             sx * ty * field[i0 + nx * j1];
         return val;
     }
     avgVx(i, j, Vx) {
-        var nx = this.nx;
+        let nx = this.nx;
         return (Vx[i + nx * (j - 1)] + Vx[i + nx * j] +
             Vx[i + 1 + nx * (j - 1)] + Vx[i + 1 + nx * j]) * 0.25;
     }
     avgVy(i, j, Vy) {
-        var nx = this.nx;
+        let nx = this.nx;
         return (Vy[i - 1 + nx * j] + Vy[i + nx * j] +
             Vy[i - 1 + nx * (j + 1)] + Vy[i + nx * (j + 1)]) * 0.25;
     }
     advectVel() {
         this.Vxprev.set(this.Vx);
         this.Vyprev.set(this.Vy);
-        var dt = this.dt;
-        var nx = this.nx;
-        var h = this.h;
-        for (var i = 1; i < this.nx - 1; i++) {
-            for (var j = 1; j < this.ny - 1; j++) {
+        let dt = this.dt;
+        let nx = this.nx;
+        let h = this.h;
+        for (let i = 1; i < this.nx - 1; i++) {
+            for (let j = 1; j < this.ny - 1; j++) {
                 if (this.S[i + nx * j] == 0.0)
                     continue;
                 // consider point in the center of the grid
-                var xn = i * h + 0.5 * h;
-                var yn = j * h + 0.5 * h;
+                let xn = i * h + 0.5 * h;
+                let yn = j * h + 0.5 * h;
                 // x component
                 if (this.S[i - 1 + nx * j] != 0.0) {
-                    var vx = this.Vx[i + nx * j];
-                    // var vy = this.Vy[i + nx*j];
-                    // var vx = this.avgVx(i, j);
-                    var vy = this.avgVy(i, j, this.Vyprev);
-                    var x = xn - vx * dt;
-                    var y = yn - vy * dt;
+                    let vx = this.Vx[i + nx * j];
+                    // let vy = this.Vy[i + nx*j];
+                    // let vx = this.avgVx(i, j);
+                    let vy = this.avgVy(i, j, this.Vyprev);
+                    let x = xn - vx * dt;
+                    let y = yn - vy * dt;
                     this.Vx[i + nx * j] = this.interpolateFromField(x, y, this.Vxprev);
                 }
                 // y component
                 if (this.S[i + nx * (j - 1)] != 0.0) {
-                    var vx = this.avgVx(i, j, this.Vxprev);
-                    // var vy = this.avgVy(i, j);
-                    // var vx = this.Vx[i + nx*j];
-                    var vy = this.Vy[i + nx * j];
-                    var x = xn - vx * dt;
-                    var y = yn - vy * dt;
+                    let vx = this.avgVx(i, j, this.Vxprev);
+                    // let vy = this.avgVy(i, j);
+                    // let vx = this.Vx[i + nx*j];
+                    let vy = this.Vy[i + nx * j];
+                    let x = xn - vx * dt;
+                    let y = yn - vy * dt;
                     this.Vy[i + nx * j] = this.interpolateFromField(x, y, this.Vyprev);
                 }
             }
         }
     }
     advectDye(Dye, Dyeprev) {
-        var dt = this.dt;
+        let dt = this.dt;
         Dyeprev.set(Dye);
-        var nx = this.nx;
-        var h = this.h;
-        for (var i = 1; i < this.nx - 1; i++) {
-            for (var j = 1; j < this.ny - 1; j++) {
+        let nx = this.nx;
+        let h = this.h;
+        for (let i = 1; i < this.nx - 1; i++) {
+            for (let j = 1; j < this.ny - 1; j++) {
                 if (this.S[i + nx * j] == 0.0)
                     continue;
-                // var vx = (this.Vx[i + nx*j] + this.Vx[(i+1) + nx*j]) * 0.5;
-                // var vy = (this.Vy[i + nx*j] + this.Vy[i + nx*(j+1)]) * 0.5;
-                var vx = this.Vx[i + nx * j];
-                var vy = this.Vy[i + nx * j];
-                var x = i * h + 0.5 * h - vx * dt;
-                var y = j * h + 0.5 * h - vy * dt;
+                // let vx = (this.Vx[i + nx*j] + this.Vx[(i+1) + nx*j]) * 0.5;
+                // let vy = (this.Vy[i + nx*j] + this.Vy[i + nx*(j+1)]) * 0.5;
+                let vx = this.Vx[i + nx * j];
+                let vy = this.Vy[i + nx * j];
+                let x = i * h + 0.5 * h - vx * dt;
+                let y = j * h + 0.5 * h - vy * dt;
                 Dye[i + nx * j] = this.interpolateFromField(x, y, Dyeprev);
             }
         }
@@ -177,19 +177,19 @@ class FluidSimulator {
     }
 }
 function hex2rgb(h) {
-    var r = (0xFF) & (h >> 16);
-    var g = (0xFF) & (h >> 8);
-    var b = (0xFF) & (h >> 0);
+    let r = (0xFF) & (h >> 16);
+    let g = (0xFF) & (h >> 8);
+    let b = (0xFF) & (h >> 0);
     return [r, g, b, 255];
 }
 function sciColor(val, minVal, maxVal) {
-    var range = maxVal - minVal;
+    let range = maxVal - minVal;
     val = clamp(val, minVal, maxVal - 0.0001);
     val = (range == 0.0) ? 0.5 : (val - minVal) / range;
-    var m = 0.25;
-    var num = Math.floor(val / m);
-    var s = (val - num * m) / m;
-    var r, g, b;
+    let m = 0.25;
+    let num = Math.floor(val / m);
+    let s = (val - num * m) / m;
+    let r, g, b;
     switch (num) {
         case 0:
             r = 0.0;
@@ -221,7 +221,7 @@ class FluidRenderer {
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width;
         this.height = canvas.height;
-        var scale = canvas.height / fluidsim.ny;
+        let scale = canvas.height / fluidsim.ny;
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.scale(scale, scale);
         this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation
