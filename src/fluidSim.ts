@@ -272,7 +272,7 @@ function sciColor(val, minVal, maxVal) {
 }
 
 
-interface RenderOption {
+interface RenderOptions {
     'show_dye'       : boolean,
     'show_obstacle'  : boolean,
     'show_streamline': boolean,
@@ -375,7 +375,7 @@ class FluidRenderer{
     //     'obstacle'  : true,
     //     'streamline': true,
     // }
-    draw(ro : RenderOption) {
+    draw(ro : RenderOptions) {
         var fl = this.fluidsim;
 
         let color     = [255, 255, 255, 255];
@@ -408,4 +408,4 @@ class FluidRenderer{
 
 }
 
-export {FluidSimulator, FluidRenderer, RenderOption};
+export {FluidSimulator, FluidRenderer, RenderOptions};

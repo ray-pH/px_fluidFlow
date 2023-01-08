@@ -1,4 +1,4 @@
-import {FluidSimulator, FluidRenderer, RenderOption} from "./fluidSim.js";
+import {FluidSimulator, FluidRenderer, RenderOptions} from "./fluidSim.js";
 import {strScene_Opposing, strScene_WindTunnel, scene_set, scenefun, strScene_toFun} from "./scenes.js";
 
 var canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -17,7 +17,7 @@ var lastValid_strScene : string = "";
 var paused = false;
 var scene = 0;
 
-var ro : RenderOption = {
+var ro : RenderOptions = {
     'show_dye'       : true,
     'show_obstacle'  : true,
     'show_streamline': true,

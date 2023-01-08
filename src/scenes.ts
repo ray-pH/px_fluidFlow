@@ -1,4 +1,4 @@
-import {FluidSimulator, FluidRenderer, RenderOption} from './fluidSim';
+import {FluidSimulator, FluidRenderer, RenderOptions} from './fluidSim';
 type scenefun = (nx : number, ny : number, S : Float32Array, utils : Object, id : Function,
                 Vx  : Float32Array, Vy  : Float32Array,
                 RD  : Float32Array, GD  : Float32Array, BD  : Float32Array,
@@ -30,7 +30,7 @@ function sceneReset(f : FluidSimulator){
     f.constBDye.fill(NaN);
 }
 
-function scene_set(fs : FluidSimulator, sf : scenefun, ro : RenderOption){
+function scene_set(fs : FluidSimulator, sf : scenefun, ro : RenderOptions){
     let utils : Object = {
         'hex2rgb' : hex2rgb,
         'sceneReset' : () => { sceneReset(fs); },
