@@ -22,7 +22,6 @@ class FluidSimulator {
     Vyprev  : Float32Array;
     Dyeprev : Float32Array;
 
-    rgb_dye : boolean;
     RDye     : Float32Array;
     GDye     : Float32Array;
     BDye     : Float32Array;
@@ -37,9 +36,7 @@ class FluidSimulator {
     constGDye : Float32Array;
     constBDye : Float32Array;
 
-    constructor(density : number, nx : number, ny : number, 
-                dt : number, n_iter : number, over_relaxation : number, 
-                rgb_dye : boolean = false) {
+    constructor(density : number, nx : number, ny : number, dt : number, n_iter : number) {
         this.density = density;
         this.nx = nx ; 
         this.ny = ny ;
@@ -64,7 +61,6 @@ class FluidSimulator {
         this.Vyprev = new Float32Array(n);
         this.Dyeprev= new Float32Array(n);
 
-        this.rgb_dye = rgb_dye;
         this.RDye = new Float32Array(n);
         this.GDye = new Float32Array(n);
         this.BDye = new Float32Array(n);
@@ -85,7 +81,7 @@ class FluidSimulator {
         this.constBDye.fill(NaN);
 
         // parameter for SOR solver
-        this.over_relaxation = over_relaxation;
+        this.over_relaxation = 1.9;
     }
 
 
@@ -244,13 +240,8 @@ class FluidSimulator {
         this.advectVel();
 
         this.advectDye(this.RDye, this.RDyeprev);
-        if (this.rgb_dye){
-            this.advectDye(this.GDye, this.GDyeprev);
-            this.advectDye(this.BDye, this.BDyeprev);
-        } else {
-            this.GDye.set(this.RDye);
-            this.BDye.set(this.RDye);
-        }
+        this.advectDye(this.GDye, this.GDyeprev);
+        this.advectDye(this.BDye, this.BDyeprev);
         this.applyConstantFields();
     }
 }

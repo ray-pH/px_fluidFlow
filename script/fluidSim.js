@@ -2,7 +2,7 @@ function clamp(x, min, max) {
     return Math.min(max, Math.max(min, x));
 }
 class FluidSimulator {
-    constructor(density, nx, ny, dt, n_iter, over_relaxation, rgb_dye = false) {
+    constructor(density, nx, ny, dt, n_iter) {
         this.density = density;
         this.nx = nx;
         this.ny = ny;
@@ -22,7 +22,6 @@ class FluidSimulator {
         this.Vxprev = new Float32Array(n);
         this.Vyprev = new Float32Array(n);
         this.Dyeprev = new Float32Array(n);
-        this.rgb_dye = rgb_dye;
         this.RDye = new Float32Array(n);
         this.GDye = new Float32Array(n);
         this.BDye = new Float32Array(n);
@@ -43,7 +42,7 @@ class FluidSimulator {
         this.constGDye.fill(NaN);
         this.constBDye.fill(NaN);
         // parameter for SOR solver
-        this.over_relaxation = over_relaxation;
+        this.over_relaxation = 1.9;
     }
     solveDivergence() {
         let nx = this.nx;
@@ -190,14 +189,8 @@ class FluidSimulator {
         this.extrapolateBoundary();
         this.advectVel();
         this.advectDye(this.RDye, this.RDyeprev);
-        if (this.rgb_dye) {
-            this.advectDye(this.GDye, this.GDyeprev);
-            this.advectDye(this.BDye, this.BDyeprev);
-        }
-        else {
-            this.GDye.set(this.RDye);
-            this.BDye.set(this.RDye);
-        }
+        this.advectDye(this.GDye, this.GDyeprev);
+        this.advectDye(this.BDye, this.BDyeprev);
         this.applyConstantFields();
     }
 }

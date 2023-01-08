@@ -2,7 +2,6 @@ import {FluidSimulator, FluidRenderer, RenderOption} from "./fluidSim.js";
 import {strScene_Opposing, strScene_WindTunnel, scene_set, scenefun, strScene_toFun} from "./scenes.js";
 
 var canvas = document.getElementById("canvas") as HTMLCanvasElement;
-var over_relaxation = 1.9;  // parameter for SOR solver
 var n_iter = 40;            // number of iteration for SOR solver
 var nx = 100;
 var ny = 100;
@@ -10,7 +9,7 @@ var ny = 100;
 var density = 1000.0;
 var dt      = 1.0/60.0;
 
-var fluidsim      = new FluidSimulator(density, nx, ny, dt, n_iter, over_relaxation, true);
+var fluidsim      = new FluidSimulator(density, nx, ny, dt, n_iter);
 var fluidrenderer = new FluidRenderer(fluidsim, canvas);
 
 
