@@ -1,4 +1,3 @@
-var scene_generators = [];
 function sceneReset(f) {
     f.Vx.fill(0.0);
     f.Vy.fill(0.0);
@@ -19,19 +18,12 @@ function sceneReset(f) {
     f.constBDye.fill(NaN);
 }
 function scene_set(fs, sf, ro) {
-    // let potentArr = qp.V;
-    // let realArr   = qp.Psi.real;
-    // let imagArr   = qp.Psi.imag;
-    // let normalize = {'wavepeak' : 1.0};
     let utils = {
         'hex2rgb': hex2rgb,
+        'sceneReset': () => { sceneReset(fs); },
         'addCircularObstacle': (x, y, r) => { addCircularObstacle(fs, x, y, r); },
     };
-    sceneReset(fs);
     sf(fs.nx, fs.ny, fs.S, utils, fs.Vx, fs.Vy, fs.RDye, fs.GDye, fs.BDye, fs.constVx, fs.constVy, fs.constRDye, fs.constGDye, fs.constBDye);
-    // sf(potentArr.length, potentArr, realArr, imagArr, normalize, ro);
-    // qp.Psi.setPeak(normalize.wavepeak);
-    // qr.rescale(ro);
 }
 function strScene_toFun(s) {
     let f = new Function('nx', 'ny', 'S', 'utils', 'initVx', 'initVy', 'initRDye', 'initGDye', 'initBDye', 'Vx', 'Vy', 'RDye', 'GDye', 'BDye', "\"use strict\";\n" + s);
@@ -66,84 +58,7 @@ function hex2rgb(h) {
     var b = (0xFF) & (h >> 0);
     return [r, g, b, 255];
 }
-// some scenes can be dynamic
-scene_generators[0] = function scene_WindTunnel(f, t = 0) {
-    var nx = f.nx;
-    var wind_vel = 2.0;
-    var pipe_height = 0.1 * f.ny;
-    // set obstacles
-    f.S.fill(1.0);
-    for (var i = 0; i < f.nx; i++) {
-        f.S[i + nx * 0] = 0.0;
-        f.S[i + nx * (f.ny - 1)] = 0.0;
-    }
-    for (var j = 0; j < f.ny; j++)
-        f.S[0 + nx * j] = 0.0;
-    for (var j = 0; j < f.ny; j++)
-        f.constVx[1 + nx * j] = wind_vel;
-    var jmin = Math.floor(0.5 * f.ny - 0.5 * pipe_height);
-    var jmax = Math.floor(0.5 * f.ny + 0.5 * pipe_height);
-    for (var j = jmin; j < jmax; j++)
-        f.constRDye[0 + nx * j] = 0.0;
-    for (var j = jmin; j < jmax; j++)
-        f.constGDye[0 + nx * j] = 0.0;
-    for (var j = jmin; j < jmax; j++)
-        f.constBDye[0 + nx * j] = 0.0;
-    for (var j = jmin; j < jmax; j++)
-        f.constRDye[1 + nx * j] = 0.0;
-    for (var j = jmin; j < jmax; j++)
-        f.constGDye[1 + nx * j] = 0.0;
-    for (var j = jmin; j < jmax; j++)
-        f.constBDye[1 + nx * j] = 0.0;
-    addCircularObstacle(f, 0.3, 0.5, 0.1);
-};
-scene_generators[1] = function scene_opposingSources(f, t = 0) {
-    var nx = f.nx;
-    var source_v = 4.0;
-    var pipe_height = 0.05 * f.ny;
-    var dye_height = 0.05 * f.ny;
-    // set obstacles
-    for (var i = 0; i < f.nx; i++) {
-        f.S[i + nx * 0] = 0.0;
-        f.S[i + nx * (f.ny - 1)] = 0.0;
-    }
-    for (var j = 0; j < f.ny; j++)
-        f.S[0 + nx * j] = 0.0;
-    for (var j = 0; j < f.ny; j++)
-        f.S[nx - 1 + nx * j] = 0.0;
-    var jmin = Math.floor(0.5 * f.ny - 0.5 * pipe_height);
-    var jmax = Math.floor(0.5 * f.ny + 0.5 * pipe_height);
-    for (var j = 0; j < f.ny; j++) {
-        f.constVx[2 + nx * j] = 0.0;
-        f.constVx[nx - 2 + nx * j] = 0.0;
-    }
-    for (var j = jmin; j < jmax; j++) {
-        f.constVx[2 + nx * j] = source_v;
-        f.constVx[nx - 2 + nx * j] = -source_v;
-    }
-    var jmin = Math.floor(0.5 * f.ny - 0.5 * dye_height);
-    var jmax = Math.floor(0.5 * f.ny + 0.5 * dye_height);
-    //#3477eb
-    //#e81570
-    let r0, g0, b0, a0, r1, g1, b1, a1;
-    [r0, g0, b0, a0] = hex2rgb(0x3477EB);
-    [r1, g1, b1, a1] = hex2rgb(0xE81570);
-    for (var j = jmin; j < jmax; j++) {
-        f.constRDye[0 + nx * j] = r0 / 255;
-        f.constGDye[0 + nx * j] = g0 / 255;
-        f.constBDye[0 + nx * j] = b0 / 255;
-        f.constRDye[2 + nx * j] = r0 / 255;
-        f.constGDye[2 + nx * j] = g0 / 255;
-        f.constBDye[2 + nx * j] = b0 / 255;
-        f.constRDye[nx - 1 + nx * j] = r1 / 255;
-        f.constGDye[nx - 1 + nx * j] = g1 / 255;
-        f.constBDye[nx - 1 + nx * j] = b1 / 255;
-        f.constRDye[nx - 3 + nx * j] = r1 / 255;
-        f.constGDye[nx - 3 + nx * j] = g1 / 255;
-        f.constBDye[nx - 3 + nx * j] = b1 / 255;
-    }
-};
-let strScene_WindTunnel = `
+let strScene_WindTunnel = `utils.sceneReset();
 let wind_vel    = 2.0;
 let pipe_height = 0.1 * ny;
 
@@ -168,7 +83,7 @@ for (let j = jmin; j < jmax; j++) BDye[1 + nx*j] = 0.0;
 // addCircularObstacle(x, y, radius)
 utils.addCircularObstacle(0.3, 0.5, 0.1);
 `;
-let strScene_Opposing = `
+let strScene_Opposing = `utils.sceneReset();
 let source_v    = 4.0;
 let pipe_height = 0.05 * ny;
 let dye_height  = 0.05 * ny;
@@ -216,4 +131,4 @@ for (var j = jmin; j < jmax; j++){
     BDye[nx-3 + nx*j] = b1/255;
 }
 `;
-export { scene_generators, sceneReset, scene_set, strScene_toFun, strScene_Opposing, strScene_WindTunnel };
+export { scene_set, strScene_toFun, strScene_Opposing, strScene_WindTunnel };

@@ -1,5 +1,5 @@
 import {FluidSimulator, FluidRenderer, RenderOption} from "./fluidSim.js";
-import {sceneReset, strScene_Opposing, strScene_WindTunnel, scene_set, scenefun, strScene_toFun} from "./scenes.js";
+import {strScene_Opposing, strScene_WindTunnel, scene_set, scenefun, strScene_toFun} from "./scenes.js";
 
 var canvas = document.getElementById("canvas") as HTMLCanvasElement;
 var over_relaxation = 1.9;  // parameter for SOR solver
@@ -13,8 +13,9 @@ var dt      = 1.0/60.0;
 var fluidsim      = new FluidSimulator(density, nx, ny, dt, n_iter, over_relaxation, true);
 var fluidrenderer = new FluidRenderer(fluidsim, canvas);
 
-var paused = false;
 
+var lastValid_strScene : string = "";
+var paused = false;
 var scene = 0;
 
 var ro : RenderOption = {
@@ -24,11 +25,13 @@ var ro : RenderOption = {
 }
 
 function setup(){
-    sceneReset(fluidsim);
-    // scene_generators[scene](fluidsim);
-    let strScene : string = strScene_WindTunnel;
-    let scenef : scenefun = strScene_toFun(strScene);
-    scene_set(fluidsim, scenef, ro);
+    let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption"]
+    containerIds.forEach((id : string) => { document.getElementById(id).style.display = 'none'; })
+
+    let initScene = strScene_WindTunnel;
+    lastValid_strScene = initScene;
+    scene_set(fluidsim, strScene_toFun(initScene), ro);
+    textarea_scene.value = initScene;
     fluidrenderer.draw(ro);
 }
 
@@ -41,7 +44,6 @@ function loop() {
 }
 
 
-var select_scene    = document.getElementById("select_scene") as HTMLSelectElement;
 var button_reset    = document.getElementById("button_reset");
 var button_ppause   = document.getElementById("button_toggle_play");
 var cbox_streamline = document.getElementById("cx_streamline") as HTMLInputElement;
@@ -52,9 +54,40 @@ button_ppause.onclick = () => {
     paused = !paused;
     button_ppause.innerHTML = paused ? "play" : "pause";
 }
+
+var textarea_scene : HTMLTextAreaElement = document.getElementById("textarea_scene") as HTMLTextAreaElement;
+var container_sceneInput = document.getElementById("container_sceneInput");
+var span_errorScene = document.getElementById("span_errorScene");
+var button_applyScene = document.getElementById("button_applyScene");
+button_applyScene.onclick = () => {
+    let s = textarea_scene.value;
+    let f : scenefun = strScene_toFun(s);
+
+    let msg : string = ""; 
+    let bgcolor : string = "#D6D6D6";
+    try {
+        scene_set(fluidsim, f, ro);
+        fluidrenderer.draw(ro);
+    } catch(e){
+        msg = e.toString();
+        bgcolor = "#D63333"
+    }
+
+    if (msg == "") lastValid_strScene = s;
+    container_sceneInput.style.backgroundColor = bgcolor;
+    span_errorScene.innerHTML = msg;
+}
+
+var strScenes = [strScene_WindTunnel, strScene_Opposing];
+var select_scene    = document.getElementById("select_scene") as HTMLSelectElement;
 select_scene.onchange = () => {
     scene = parseInt(select_scene.value);
-    setup();
+    let strScene = strScenes[scene];
+    lastValid_strScene = strScene;
+    textarea_scene.value = strScene;
+    let f : scenefun = strScene_toFun(strScene);
+    scene_set(fluidsim, f, ro);
+    fluidrenderer.draw(ro);
 }
 
 function setButtonShow(buttonId : string, containerId : string){
