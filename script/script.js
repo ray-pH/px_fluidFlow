@@ -1,5 +1,5 @@
 import { FluidSimulator, FluidRenderer } from "./fluidSim.js";
-import { scene_generators, sceneReset } from "./scenes.js";
+import { sceneReset, strScene_WindTunnel, scene_set, strScene_toFun } from "./scenes.js";
 var canvas = document.getElementById("canvas");
 var over_relaxation = 1.9; // parameter for SOR solver
 var n_iter = 40; // number of iteration for SOR solver
@@ -18,7 +18,10 @@ var ro = {
 };
 function setup() {
     sceneReset(fluidsim);
-    scene_generators[scene](fluidsim);
+    // scene_generators[scene](fluidsim);
+    let strScene = strScene_WindTunnel;
+    let scenef = strScene_toFun(strScene);
+    scene_set(fluidsim, scenef, ro);
     fluidrenderer.draw(ro);
 }
 function loop() {
