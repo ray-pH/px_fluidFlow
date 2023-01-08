@@ -23,10 +23,12 @@ function scene_set(fs, sf, ro) {
         'sceneReset': () => { sceneReset(fs); },
         'addCircularObstacle': (x, y, r) => { addCircularObstacle(fs, x, y, r); },
     };
-    sf(fs.nx, fs.ny, fs.S, utils, fs.Vx, fs.Vy, fs.RDye, fs.GDye, fs.BDye, fs.constVx, fs.constVy, fs.constRDye, fs.constGDye, fs.constBDye);
+    let nx = fs.nx;
+    function id(i, j) { return i + nx * j; }
+    sf(fs.nx, fs.ny, fs.S, utils, id, fs.Vx, fs.Vy, fs.RDye, fs.GDye, fs.BDye, fs.constVx, fs.constVy, fs.constRDye, fs.constGDye, fs.constBDye);
 }
 function strScene_toFun(s) {
-    let f = new Function('nx', 'ny', 'S', 'utils', 'initVx', 'initVy', 'initRDye', 'initGDye', 'initBDye', 'Vx', 'Vy', 'RDye', 'GDye', 'BDye', "\"use strict\";\n" + s);
+    let f = new Function('nx', 'ny', 'S', 'utils', 'id', 'initVx', 'initVy', 'initRDye', 'initGDye', 'initBDye', 'Vx', 'Vy', 'RDye', 'GDye', 'BDye', "\"use strict\";\n" + s);
     return f;
 }
 function clamp(x, min, max) {
@@ -65,22 +67,29 @@ let pipe_height = 0.1 * ny;
 // set obstacles
 S.fill(1.0);
 for (var i = 0; i < nx; i++) {
-    S[i + nx*0       ] = 0.0;
-    S[i + nx*(ny-1)] = 0.0;
+    S[id(i,0)] = 0.0;
+    S[id(i,ny-1)] = 0.0;
 }
-for (var j = 0; j < ny; j++) S [0 + nx*j] = 0.0;
-for (var j = 0; j < ny; j++) Vx[1 + nx*j] = wind_vel;
+for (var j = 0; j < ny; j++){
+    S [id(0,j)] = 0.0;
+}
 
+// set velocity
+for (var j = 0; j < ny; j++) Vx[id(1,j)] = wind_vel;
+
+// set dye
 var jmin = Math.floor(0.5 * ny - 0.5*pipe_height);
 var jmax = Math.floor(0.5 * ny + 0.5*pipe_height);
-for (let j = jmin; j < jmax; j++) RDye[0 + nx*j] = 0.0;
-for (let j = jmin; j < jmax; j++) GDye[0 + nx*j] = 0.0;
-for (let j = jmin; j < jmax; j++) BDye[0 + nx*j] = 0.0;
-for (let j = jmin; j < jmax; j++) RDye[1 + nx*j] = 0.0;
-for (let j = jmin; j < jmax; j++) GDye[1 + nx*j] = 0.0;
-for (let j = jmin; j < jmax; j++) BDye[1 + nx*j] = 0.0;
+for (let j = jmin; j < jmax; j++){
+    RDye[id(0,j)] = 0.0;
+    GDye[id(0,j)] = 0.0;
+    BDye[id(0,j)] = 0.0;
+    RDye[id(1,j)] = 0.0;
+    GDye[id(1,j)] = 0.0;
+    BDye[id(1,j)] = 0.0;
+}
 
-// addCircularObstacle(x, y, radius)
+//    addCircularObstacle(x,   y,   radius)
 utils.addCircularObstacle(0.3, 0.5, 0.1);
 `;
 let strScene_Opposing = `utils.sceneReset();
@@ -90,22 +99,20 @@ let dye_height  = 0.05 * ny;
 
 // set obstacles
 for (let i = 0; i < nx; i++) {
-    S[i + nx*0       ] = 0.0;
-    S[i + nx*(ny-1)] = 0.0;
+    S[id(i,0   )] = 0.0;
+    S[id(i,ny-1)] = 0.0;
 }
-for (let j = 0; j < ny; j++) S [0    + nx*j] = 0.0;
-for (let j = 0; j < ny; j++) S [nx-1 + nx*j] = 0.0;
+for (let j = 0; j < ny; j++){
+    S[id(0   ,j)] = 0.0;
+    S[id(nx-1,j)] = 0.0;
+}
 
 let jmin = Math.floor(0.5 * ny - 0.5*pipe_height);
 let jmax = Math.floor(0.5 * ny + 0.5*pipe_height);
 
-for (let j = 0; j < ny; j++){
-    Vx[2    + nx*j] = 0.0;
-    Vx[nx-2 + nx*j] = 0.0;
-}
 for (let j = jmin; j < jmax; j++){
-    Vx[2    + nx*j] = source_v;
-    Vx[nx-2 + nx*j] = -source_v;
+    Vx[id(2   ,j)] = source_v;
+    Vx[id(nx-2,j)] = -source_v;
 }
 
 jmin = Math.floor(0.5 * ny - 0.5*dye_height);
@@ -117,18 +124,18 @@ let r0,g0,b0,a0, r1, g1, b1, a1;
 [r0,g0,b0,a0] = utils.hex2rgb(0x3477EB);
 [r1,g1,b1,a1] = utils.hex2rgb(0xE81570);
 for (var j = jmin; j < jmax; j++){
-    RDye[0    + nx*j] = r0/255;
-    GDye[0    + nx*j] = g0/255;
-    BDye[0    + nx*j] = b0/255;
-    RDye[2    + nx*j] = r0/255;
-    GDye[2    + nx*j] = g0/255;
-    BDye[2    + nx*j] = b0/255;
-    RDye[nx-1 + nx*j] = r1/255;
-    GDye[nx-1 + nx*j] = g1/255;
-    BDye[nx-1 + nx*j] = b1/255;
-    RDye[nx-3 + nx*j] = r1/255;
-    GDye[nx-3 + nx*j] = g1/255;
-    BDye[nx-3 + nx*j] = b1/255;
+    RDye[id(0,j)] = r0/255;
+    GDye[id(0,j)] = g0/255;
+    BDye[id(0,j)] = b0/255;
+    RDye[id(2,j)] = r0/255;
+    GDye[id(2,j)] = g0/255;
+    BDye[id(2,j)] = b0/255;
+    RDye[id(nx-1,j)] = r1/255;
+    GDye[id(nx-1,j)] = g1/255;
+    BDye[id(nx-1,j)] = b1/255;
+    RDye[id(nx-3,j)] = r1/255;
+    GDye[id(nx-3,j)] = g1/255;
+    BDye[id(nx-3,j)] = b1/255;
 }
 `;
 export { scene_set, strScene_toFun, strScene_Opposing, strScene_WindTunnel };
