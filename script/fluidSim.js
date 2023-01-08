@@ -2,11 +2,11 @@ function clamp(x, min, max) {
     return Math.min(max, Math.max(min, x));
 }
 class FluidSimulator {
-    constructor(density, nx, ny, h, dt, n_iter, over_relaxation, rgb_dye = false) {
+    constructor(density, nx, ny, dt, n_iter, over_relaxation, rgb_dye = false) {
         this.density = density;
         this.nx = nx;
         this.ny = ny;
-        this.h = h;
+        this.h = 1.0 / nx;
         this.n_iter = n_iter;
         this.dt = dt;
         this.n = this.nx * this.ny;

@@ -69,8 +69,10 @@ scene_generators[0] = function scene_WindTunnel(f, t = 0){
     var jmin = Math.floor(0.5 * f.ny - 0.5*pipe_height);
     var jmax = Math.floor(0.5 * f.ny + 0.5*pipe_height);
     for (var j = jmin; j < jmax; j++) f.RDye[0 + nx*j] = 0.0;
+    for (var j = jmin; j < jmax; j++) f.GDye[0 + nx*j] = 0.0;
+    for (var j = jmin; j < jmax; j++) f.BDye[0 + nx*j] = 0.0;
 
-    addCircularObstacle(f, 0.4, 0.5, 0.15);
+    addCircularObstacle(f, 0.3, 0.5, 0.1);
 }
 
 scene_generators[1] = function scene_opposingSources(f, t = 0){

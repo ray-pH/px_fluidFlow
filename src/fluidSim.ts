@@ -32,12 +32,12 @@ class FluidSimulator {
     over_relaxation : number;
 
     constructor(density : number, nx : number, ny : number, 
-                h : number, dt : number, n_iter : number, over_relaxation : number, 
+                dt : number, n_iter : number, over_relaxation : number, 
                 rgb_dye : boolean = false) {
         this.density = density;
         this.nx = nx ; 
         this.ny = ny ;
-        this.h  = h;
+        this.h  = 1.0/nx;
 
         this.n_iter = n_iter;
         this.dt = dt;
