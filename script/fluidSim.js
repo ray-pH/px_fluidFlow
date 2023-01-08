@@ -2,8 +2,8 @@ function clamp(x, min, max) {
     return Math.min(max, Math.max(min, x));
 }
 class FluidSimulator {
-    constructor(density, nx, ny, dt, n_iter) {
-        this.density = density;
+    constructor(nx, ny, dt, n_iter) {
+        this.density = 1000;
         this.nx = nx;
         this.ny = ny;
         this.h = 1.0 / nx;
@@ -241,6 +241,7 @@ class FluidRenderer {
         this.height = canvas.height;
         let scale = canvas.height / fluidsim.ny;
         this.ctx.clearRect(0, 0, this.width, this.height);
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.scale(scale, scale);
         this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation
         // temp canvas to store original values

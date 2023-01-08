@@ -2,6 +2,12 @@ function clamp(x : number, min : number,max : number) : number{
     return Math.min(max, Math.max(min, x));
 }
 
+interface SimulOptions {
+    'n_grid'       : number,
+    'dt'  : number,
+    'n_iter': number,
+}
+
 class FluidSimulator {
     density : number;
     nx      : number;
@@ -36,8 +42,8 @@ class FluidSimulator {
     constGDye : Float32Array;
     constBDye : Float32Array;
 
-    constructor(density : number, nx : number, ny : number, dt : number, n_iter : number) {
-        this.density = density;
+    constructor(nx : number, ny : number, dt : number, n_iter : number) {
+        this.density = 1000;
         this.nx = nx ; 
         this.ny = ny ;
         this.h  = 1.0/nx;
@@ -300,6 +306,7 @@ class FluidRenderer{
 
         let scale = canvas.height/fluidsim.ny;
         this.ctx.clearRect(0, 0, this.width, this.height);
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.scale(scale,scale);
         this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation
         
@@ -408,4 +415,4 @@ class FluidRenderer{
 
 }
 
-export {FluidSimulator, FluidRenderer, RenderOptions};
+export {FluidSimulator, FluidRenderer, RenderOptions, SimulOptions};

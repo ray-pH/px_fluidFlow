@@ -1,22 +1,27 @@
 import { FluidSimulator, FluidRenderer } from "./fluidSim.js";
 import { strScene_Opposing, strScene_WindTunnel, scene_set, strScene_toFun } from "./scenes.js";
 var canvas = document.getElementById("canvas");
-var n_iter = 40; // number of iteration for SOR solver
-var nx = 100;
-var ny = 100;
-var density = 1000.0;
-var dt = 1.0 / 60.0;
-var fluidsim = new FluidSimulator(density, nx, ny, dt, n_iter);
-var fluidrenderer = new FluidRenderer(fluidsim, canvas);
 var lastValid_strScene = "";
 var paused = false;
 var scene = 0;
+var so = {
+    n_grid: 100,
+    dt: 0.016,
+    n_iter: 40,
+};
 var ro = {
     'show_dye': true,
     'show_obstacle': true,
     'show_streamline': true,
 };
+var fluidsim;
+var fluidrenderer;
+function initSystem() {
+    fluidsim = new FluidSimulator(so.n_grid, so.n_grid, so.dt, so.n_iter);
+    fluidrenderer = new FluidRenderer(fluidsim, canvas);
+}
 function setup() {
+    initSystem();
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption"];
     containerIds.forEach((id) => { document.getElementById(id).style.display = 'none'; });
     let initScene = strScene_WindTunnel;
@@ -33,11 +38,12 @@ function loop() {
     requestAnimationFrame(loop);
 }
 var button_reset = document.getElementById("button_reset");
+button_reset.onclick = () => {
+    let f = strScene_toFun(lastValid_strScene);
+    scene_set(fluidsim, f, ro);
+    fluidrenderer.draw(ro);
+};
 var button_ppause = document.getElementById("button_toggle_play");
-var cbox_streamline = document.getElementById("cx_streamline");
-var cbox_dye = document.getElementById("cx_dye");
-var cbox_obstacle = document.getElementById("cx_obstacle");
-button_reset.onclick = setup;
 button_ppause.onclick = () => {
     paused = !paused;
     button_ppause.innerHTML = paused ? "play" : "pause";
@@ -87,8 +93,37 @@ function setButtonShow(buttonId, containerId) {
 setButtonShow("button_moreScene", "container_sceneInput");
 setButtonShow("button_moreRender", "container_renderOption");
 setButtonShow("button_moreSimul", "container_simulOption");
+var cbox_streamline = document.getElementById("cx_streamline");
+var cbox_dye = document.getElementById("cx_dye");
+var cbox_obstacle = document.getElementById("cx_obstacle");
 cbox_streamline.onchange = () => { ro['show_streamline'] = cbox_streamline.checked; };
 cbox_dye.onchange = () => { ro['show_dye'] = cbox_dye.checked; };
 cbox_obstacle.onchange = () => { ro['show_obstacle'] = cbox_obstacle.checked; };
+const tx_SOcomponent = {
+    "tx_n_grid": "n_grid",
+    "tx_n_iter": "n_iter",
+    "tx_dt": "dt",
+};
+for (let tx_id in tx_SOcomponent) {
+    let comp = tx_SOcomponent[tx_id];
+    let tx_element = document.getElementById(tx_id);
+    let val = so[comp];
+    tx_element.value = (val < 0.01) ? val.toExponential() : val.toString();
+}
+var button_applySimulOp = document.getElementById("button_applySimulOp");
+button_applySimulOp.onclick = () => {
+    for (let tx_id in tx_SOcomponent) {
+        let comp = tx_SOcomponent[tx_id];
+        let tx_element = document.getElementById(tx_id);
+        let parsed = parseFloat(tx_element.value);
+        if (isNaN(parsed))
+            return;
+        so[comp] = parsed;
+    }
+    initSystem();
+    let f = strScene_toFun(lastValid_strScene);
+    scene_set(fluidsim, f, ro);
+    fluidrenderer.draw(ro);
+};
 setup();
 loop();
