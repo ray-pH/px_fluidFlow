@@ -321,7 +321,7 @@ class FluidRenderer{
 
     drawStreamline(){
         var h = this.fluidsim.h;
-        // var segLen = h * 0.2;
+        var segLen = h * 0.2;
         var numSegs = 15;
 
         this.ctx.strokeStyle = "#000000";
@@ -334,17 +334,14 @@ class FluidRenderer{
                 var y = (j + 0.5) * h;
 
                 this.ctx.beginPath();
-                // c.moveTo(cX(x), cY(y));
                 this.ctx.moveTo(x/h, y/h);
 
                 for (var n = 0; n < numSegs; n++) {
                     var u = this.fluidsim.interpolateFromField(x, y, this.fluidsim.Vx);
                     var v = this.fluidsim.interpolateFromField(x, y, this.fluidsim.Vy);
-                    // var l = Math.sqrt(u*u + v*v);
-                    // x += u/l * segLen;
-                    // y += v/l * segLen;
-                    x += u * 0.01;
-                    y += v * 0.01;
+                    var l = Math.sqrt(u*u + v*v);
+                    x += u/l * segLen;
+                    y += v/l * segLen;
                     if (x > this.fluidsim.nx * this.fluidsim.h) break;
                     this.ctx.lineTo(x/h, y/h);
                 }
