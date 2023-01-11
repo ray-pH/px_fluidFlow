@@ -51,6 +51,8 @@ body {
 
 .eq {
     margin-left: 10px;
+    margin-right: 10px;
+    display: inline-block;
 }
 
 button{
@@ -130,6 +132,11 @@ button:hover {
     padding: 10px;
     display: none;
 }
+
+.showfirst {
+    display: block;
+}
+
 
 #textarea_scene {
     /* font-family: "PixelUniCode"; */
