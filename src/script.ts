@@ -25,10 +25,35 @@ function initSystem(){
     fluidrenderer = new FluidRenderer(fluidsim, canvas);
 }
 
+function readSceneFromURL() : boolean{
+    let queryString : Window['location']['search'] = window.location.search;
+    let urlParams   : URLSearchParams = new URLSearchParams(queryString);
+    let urlstrScene : string = urlParams.get('scene');
+    if (urlstrScene == null) return false;
+
+    let parsedstrScene : string = "";
+    try{
+        parsedstrScene = atob(decodeURIComponent(urlstrScene));
+    } catch(e){
+        console.log(e);
+        return false;
+    }
+
+    (document.getElementById("select_scene") as HTMLSelectElement).value = "2";
+    lastValid_strScene = parsedstrScene;
+    textarea_scene.value = parsedstrScene;
+    document.getElementById("button_moreScene").click();
+    document.getElementById("button_applyScene").click();
+    return true;
+}
+
 function setup(){
     initSystem();
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption", "container_sceneHelp"];
     containerIds.forEach((id : string) => { document.getElementById(id).style.display = 'none'; })
+
+    let success = readSceneFromURL();
+    if (success) return;
 
     let initScene = strScene_WindTunnel;
     lastValid_strScene = initScene;
@@ -101,7 +126,7 @@ button_shareScene.onclick = () => {
     let strScene   : string = textarea_scene.value;
     let strScene64 : string = btoa(strScene);
     span_shareScene.style.display = "grid";
-    input_shareScene.value = siteURI + "?scene=" + strScene64;
+    input_shareScene.value = siteURI + "?scene=" + encodeURIComponent(strScene64);
 }
 
 function setButtonShow(buttonId : string, containerId : string, sOpen : string, sClosed : string){
