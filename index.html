@@ -63,7 +63,35 @@
                 <div class="hideable_container" id="container_sceneInput">
                     <textarea id="textarea_scene"></textarea>
                     <button id="button_applyScene">apply</button>
+                    <button id="button_helpScene">?</button>
                     <div id="span_errorScene"></div>
+                    <div id="container_sceneHelp">
+                        <br>
+                        Available variables:
+                        <br><span class="descvar">nx</span><span class="desctype"> (number) [read-only]</span>
+                        : number of grid x direction (column)
+                        <br><span class="descvar">ny</span><span class="desctype"> (number) [read-only]</span>
+                        : number of grid y direction (rows)
+                        <br><span class="descvar">id(i,j)</span><span class="desctype"> (Function(number, number) : number)</span>
+                        : function that given the column and row index (i,j), will return the 1D index in the array.
+                        <br><span class="descvar">Vx, Vy</span><span class="desctype"> (Float32Array)</span>
+                        : velocity in the x and y direction in a cell
+                        <br><span class="descvar">RDye, GDye, BDye</span><span class="desctype"> (Float32Array)</span>
+                        : value (0.0 - 1.0) of each RGB component of the dye in a cell
+                        <br><span class="descvar">initVx, initVy, initRDye, initGDye, initBDye</span><span class="desctype"> (Float32Array)</span>
+                        : initial value of each field. values from init field will only be applied as initial condition, and the value will change and evolve naturally. (While the value from (normal) field will be fixed.)
+                        <br><span class="descvar">S</span><span class="desctype"> (Float32Array)</span>
+                        : information about obstacle, S = 0.0 mean obstacle, S = 1.0 mean free, S = 0.5 mean half of the flow will be transferred. (you can also think of S as fraction of the flow that is transfered through a cell)
+                        <br><br>Objects:
+                        <br><span class="descvar">utils.hex2rgb(hex)</span><span class="desctype"> (Function(number) : number[4])</span>
+                        : function that given a number, will return array containing RGBA values (0-255) corresponding to that number (ex: utils.hexrgb(0xE022E0) : [224,34,224, 255])
+                        <br><span class="descvar">utils.sceneReset</span><span class="desctype"> (Function(void) : void)</span>
+                        : reset the values of all field
+                        <br><span class="descvar">utils.addCircularObstacle(xpos, ypos radius)</span><span class="desctype"> (Function(number, number, number) : void)</span>
+                        : function that generate a circular obstacle
+                        <br><span class="descvar">Math</span><span class="desctype"> (object)</span>
+                        : "library" of mathematical functions (javascript)
+                    </div>
                 </div>
                 <br><hr>
                 <label for="button_moreRender">Render Options</label>

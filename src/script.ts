@@ -27,7 +27,7 @@ function initSystem(){
 
 function setup(){
     initSystem();
-    let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption"]
+    let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption", "container_sceneHelp"];
     containerIds.forEach((id : string) => { document.getElementById(id).style.display = 'none'; })
 
     let initScene = strScene_WindTunnel;
@@ -93,19 +93,20 @@ select_scene.onchange = () => {
     fluidrenderer.draw(ro);
 }
 
-function setButtonShow(buttonId : string, containerId : string){
+function setButtonShow(buttonId : string, containerId : string, sOpen : string, sClosed : string){
     let button     = document.getElementById(buttonId);
     let container  = document.getElementById(containerId);
     button.onclick = ()=>{
         let changeto   = (container.style.display == 'none') ? 'block' : 'none';
-        button.innerHTML = (changeto == 'none') ? '∨' : '∧';
+        button.innerHTML = (changeto == 'none') ? sOpen : sClosed;
         container.style.display = changeto;
     };
 }
-setButtonShow("button_moreDesc"  , "container_desc");
-setButtonShow("button_moreScene" , "container_sceneInput");
-setButtonShow("button_moreRender", "container_renderOption");
-setButtonShow("button_moreSimul" , "container_simulOption");
+setButtonShow("button_moreDesc"  , "container_desc"        ,'∨','∧');
+setButtonShow("button_moreScene" , "container_sceneInput"  ,'∨','∧');
+setButtonShow("button_moreRender", "container_renderOption",'∨','∧');
+setButtonShow("button_moreSimul" , "container_simulOption" ,'∨','∧');
+setButtonShow("button_helpScene", "container_sceneHelp"    ,'?','?');
 
 var cbox_streamline = document.getElementById("cx_streamline") as HTMLInputElement;
 var cbox_dye        = document.getElementById("cx_dye") as HTMLInputElement;

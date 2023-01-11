@@ -49,6 +49,18 @@ body {
     /* margin-left: 10px; */
 }
 
+#container_sceneHelp{
+    display: none;
+}
+.descvar, .desctype {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+}
+.desctype{
+    color: #666;
+}
+
 .eq {
     margin-left: 10px;
     margin-right: 10px;
@@ -105,6 +117,7 @@ button:hover {
 .right-main{
     flex-grow: 1;
     /* margin-left: 10px; */
+    flex-basis: 380px;
     padding: 1em;
     background-color: #F7F7F7;
 }
